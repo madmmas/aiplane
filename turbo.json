@@ -12,6 +12,12 @@
     "preview": {
       "persistent": true,
       "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
     }
   }
 }

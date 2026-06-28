@@ -1,12 +1,18 @@
-# AI Manager
+# AIPlane
+
+[![CI](https://github.com/madmmas/aiplane/actions/workflows/ci.yml/badge.svg)](https://github.com/madmmas/aiplane/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A **micro-frontend** monorepo for AI management tooling. The project uses a host/remote architecture with **Module Federation** (Vite Plugin Federation), so the dashboard loads and runs multiple independent apps as federated modules.
+
+For product intent, architecture, and roadmap, see [`docs/SPEC.md`](docs/SPEC.md).
 
 ## Tech Stack
 
 - **Monorepo**: pnpm workspaces + [Turborepo](https://turbo.build/)
 - **Build**: [Vite](https://vitejs.dev/) + [@originjs/vite-plugin-federation](https://github.com/originjs/vite-plugin-federation)
 - **UI**: React 18, TypeScript
+- **Lint/Format**: [Biome](https://biomejs.dev/)
 
 ## Apps
 
@@ -20,7 +26,7 @@ A **micro-frontend** monorepo for AI management tooling. The project uses a host
 
 ## Prerequisites
 
-- **Node.js** ≥ 18  
+- **Node.js** ≥ 18 (see [`.nvmrc`](.nvmrc) for recommended version)
 - **pnpm** 9.x (recommended; project uses `packageManager: "pnpm@9.14.2"`)
 
 Install pnpm if needed:
@@ -62,7 +68,7 @@ Build all apps (respects Turborepo dependency order and caching):
 pnpm build
 ```
 
-Outputs go to each app’s `dist/` folder.
+Outputs go to each app's `dist/` folder.
 
 ### Preview (production build locally)
 
@@ -75,9 +81,18 @@ pnpm preview
 
 Same ports as dev (e.g. dashboard at http://localhost:5173).
 
+## Quality checks
+
+```bash
+pnpm lint        # Biome lint and format check
+pnpm lint:fix    # Auto-fix lint and format issues
+pnpm typecheck   # TypeScript type checking
+pnpm build       # Production build
+```
+
 ## Running a single app
 
-From repo root, use Turbo’s filter:
+From repo root, use Turbo's filter:
 
 ```bash
 # Only dashboard
@@ -98,13 +113,15 @@ Note: For full micro-frontend behavior, run `pnpm dev` at the root so host and r
 ## Project structure
 
 ```
-ai-manager/
+aiplane/
 ├── apps/
 │   ├── dashboard/      # Host app (port 5173)
 │   ├── guardrail/      # Remote (port 5175)
 │   ├── prompt-manager/ # Remote (port 5174)
 │   ├── user-manager/   # Remote (port 5176)
 │   └── usages-data/    # Remote (port 5177)
+├── docs/
+│   └── SPEC.md         # Product spec and architecture
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── turbo.json
@@ -119,6 +136,22 @@ Common tasks are available via `make` (see `make help`):
 - `make dev` – run all apps in dev  
 - `make build` – build all apps  
 - `make preview` – preview production build  
+- `make lint` – run Biome lint/format check  
+- `make typecheck` – run TypeScript type checking  
 - `make clean` – remove build artifacts and caches  
 
 Run `make help` for the full list.
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, and pull request guidelines.
+
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
+
+## Security
+
+To report a security vulnerability, please follow the process in [SECURITY.md](SECURITY.md). Do not open public issues for security concerns.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

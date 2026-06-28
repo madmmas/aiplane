@@ -1,16 +1,18 @@
-# AI Manager micro-frontend — common commands
+# AIPlane micro-frontend — common commands
 # Usage: make [target]; run 'make help' for list
 
-.PHONY: help install dev build preview clean dev-dashboard dev-prompt dev-guardrail dev-user dev-usages
+.PHONY: help install dev build preview lint typecheck clean dev-dashboard dev-prompt dev-guardrail dev-user dev-usages
 
 # Default target
 help:
-	@echo "AI Manager — available targets:"
+	@echo "AIPlane — available targets:"
 	@echo ""
 	@echo "  make install      Install dependencies (pnpm install)"
 	@echo "  make dev          Run all apps in development mode"
 	@echo "  make build        Build all apps for production"
 	@echo "  make preview      Preview production build (run after make build)"
+	@echo "  make lint         Run Biome lint and format check"
+	@echo "  make typecheck    Run TypeScript type checking"
 	@echo "  make clean        Remove dist/ and .turbo caches"
 	@echo ""
 	@echo "  make dev-dashboard    Run only dashboard (port 5173)"
@@ -31,6 +33,12 @@ build:
 
 preview:
 	pnpm preview
+
+lint:
+	pnpm lint
+
+typecheck:
+	pnpm typecheck
 
 clean:
 	rm -rf apps/*/dist apps/*/.turbo .turbo
