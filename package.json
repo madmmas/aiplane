@@ -1,13 +1,31 @@
 {
-  "name": "ai-manager-micro-frontend",
+  "name": "aiplane",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madmmas/aiplane.git"
+  },
+  "bugs": "https://github.com/madmmas/aiplane/issues",
+  "homepage": "https://github.com/madmmas/aiplane#readme",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "preview": "turbo preview"
+    "preview": "turbo preview",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "turbo typecheck",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
     "turbo": "^2.3.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json}": "biome check --write --no-errors-on-unmatched"
   },
   "packageManager": "pnpm@9.14.2",
   "engines": {

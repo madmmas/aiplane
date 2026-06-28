@@ -56,7 +56,15 @@ export default function App() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <header style={{ padding: "1rem 1.5rem", borderBottom: "1px solid #eee", display: "flex", alignItems: "center", gap: "1rem" }}>
+      <header
+        style={{
+          padding: "1rem 1.5rem",
+          borderBottom: "1px solid #eee",
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+        }}
+      >
         <h1 style={{ margin: 0, fontSize: "1.25rem" }}>AI Manager</h1>
         <nav style={{ display: "flex", gap: "0.5rem" }}>
           {TABS.map(({ id, label }) => (
@@ -79,7 +87,9 @@ export default function App() {
       </header>
       <main style={{ flex: 1, padding: "1.5rem" }}>
         {activeTab === "dashboard" && (
-          <p>Welcome to the AI Manager dashboard. Use the tabs above to open each micro-frontend.</p>
+          <p>
+            Welcome to the AI Manager dashboard. Use the tabs above to open each micro-frontend.
+          </p>
         )}
         {activeTab === "promptManager" && (
           <RemoteErrorBoundary fallback={<div>Failed to load Prompt Manager.</div>}>

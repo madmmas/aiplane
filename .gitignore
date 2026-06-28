@@ -22,3 +22,6 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Nested reference repo (not part of this monorepo)
+admin-dashboard-ui/
