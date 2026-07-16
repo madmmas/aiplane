@@ -1,1 +1,7 @@
+branch="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  printf '%s\n' "Error: direct commits to '$branch' are not allowed. Create a feature branch and open a PR." >&2
+  exit 1
+fi
+
 pnpm exec lint-staged
