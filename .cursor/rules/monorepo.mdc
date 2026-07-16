@@ -1,0 +1,57 @@
+---
+description: AIPlane monorepo overview, pnpm/Turborepo conventions, and common commands. Always loaded.
+alwaysApply: true
+---
+
+# AIPlane — Monorepo Rules
+
+## What this repo is
+AIPlane is a micro-frontend monorepo for AI management tooling, using a host/remote
+architecture with Module Federation (Vite Plugin Federation). The dashboard app is the
+host and loads other apps as federated remotes at runtime.
+
+Product intent, architecture, and roadmap live in `docs/SPEC.md` — read it before
+proposing structural changes.
+
+## Tech stack
+- Monorepo: pnpm workspaces (`apps/*`) + Turborepo for task orchestration/caching
+- Build: Vite + `@originjs/vite-plugin-federation`
+- UI: React (18/19), TypeScript (strict mode)
+- Lint/format: Biome (not ESLint/Prettier)
+- Git hooks: Husky + lint-staged
+- Package manager: pnpm 9.x — never use npm or yarn commands or lockfiles
+- Node: >=18 (see `.nvmrc` for the pinned version)
+
+## Monorepo layout
+- `apps/dashboard` — host app (port 5173), loads all remotes via Module Federation
+- `apps/prompt-manager` — remote (port 5174)
+- `apps/guardrail` — remote (port 5175)
+- `apps/user-manager` — remote (port 5176)
+- `apps/usages-data` — remote (port 5177)
+
+Each app is an independent Vite project with its own `package.json`, `tsconfig.json`,
+and `vite.config.ts`. Treat each app as a self-contained package (`@repo/<name>`)
+unless a change is explicitly cross-cutting.
+
+## Common commands
+- `pnpm install` — install all workspace deps (run from repo root only)
+- `pnpm dev` — run all apps in dev mode (needed for federation to work end-to-end)
+- `pnpm build` — build all apps in Turborepo dependency order
+- `pnpm preview` — preview production builds
+- `pnpm lint` / `pnpm lint:fix` — Biome check / autofix
+- `pnpm typecheck` — TypeScript check across all apps
+- `pnpm turbo dev --filter=@repo/dashboard` — run a single app by package name
+
+## Working conventions
+- This is a pnpm workspace: never add a `node_modules` inside an individual app for a
+  dependency that should be hoisted; add deps via pnpm from the correct app directory.
+- Respect Turborepo's task graph (`turbo.json`) — `build` and `typecheck` depend on
+  upstream package builds/typechecks (`^build`, `^typecheck`); don't bypass this by
+  scripting around Turbo.
+- `admin-dashboard-ui/` is a nested reference repo excluded from Biome and git tracking
+  — don't edit it as part of this codebase's changes.
+- Keep new apps consistent with existing ones: same file layout
+  (`index.html`, `src/main.tsx`, `src/App.tsx`, `vite.config.ts`, `tsconfig.json`),
+  same Biome/TS config conventions, and register the new app in `pnpm-workspace.yaml`
+  (already covered by `apps/*`) and in the dashboard's federation `remotes` if it
+  should be loaded by the host.

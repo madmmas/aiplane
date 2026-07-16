@@ -5,7 +5,10 @@
 
 A **micro-frontend** monorepo for AI management tooling. The project uses a host/remote architecture with **Module Federation** (Vite Plugin Federation), so the dashboard loads and runs multiple independent apps as federated modules.
 
-For product intent, architecture, and roadmap, see [`docs/SPEC.md`](docs/SPEC.md).
+For product intent, architecture, and roadmap, see [`docs/SPEC.md`](docs/SPEC.md).  
+For the issue → branch → PR workflow, see [`docs/ISSUE_WORKFLOW.md`](docs/ISSUE_WORKFLOW.md).
+
+Static UI reference mockups live under [`mock/`](mock/) (including brand icons in `mock/icons/`). These files are **reference-only** — not part of the runtime app — and are excluded from Biome lint.
 
 ## Tech Stack
 
@@ -121,11 +124,13 @@ aiplane/
 │   ├── user-manager/   # Remote (port 5176)
 │   └── usages-data/    # Remote (port 5177)
 ├── docs/
-│   └── SPEC.md         # Product spec and architecture
+│   ├── SPEC.md           # Product spec and architecture
+│   └── ISSUE_WORKFLOW.md # Issue / branch / PR workflow
+├── mock/                 # UI mock + brand icons (reference only)
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── turbo.json
-└── Makefile            # Common commands (make help)
+└── Makefile              # Common commands (make help)
 ```
 
 ## Makefile
