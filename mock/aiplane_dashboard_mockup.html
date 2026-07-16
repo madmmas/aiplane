@@ -1,0 +1,381 @@
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',var(--font-sans);font-size:13px;background:#0f1117;color:#e8eaf0}
+  .shell{display:flex;flex-direction:column;height:640px;border:0.5px solid #2e3248;border-radius:12px;overflow:hidden;background:#1a1d27}
+  .topbar{height:46px;background:#0f1117;border-bottom:0.5px solid #2e3248;display:flex;align-items:center;padding:0 14px;gap:12px;flex-shrink:0}
+  .logo-mark{display:flex;align-items:center;gap:8px;text-decoration:none}
+  .logo-svg{flex-shrink:0}
+  .logo-wordmark{font-family:'JetBrains Mono','Courier New',monospace;font-size:15px;font-weight:500;letter-spacing:-0.02em;line-height:1}
+  .logo-wordmark .ai{color:#6c8ef5}
+  .logo-wordmark .pl{color:#e8eaf0}
+  .divider-v{width:0.5px;height:20px;background:#2e3248;margin:0 2px}
+  .proj-switcher{display:flex;align-items:center;gap:5px;font-size:12px;color:#8b90a8;background:#1a1d27;border:0.5px solid #2e3248;border-radius:6px;padding:4px 8px;cursor:pointer}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .avatar{width:26px;height:26px;border-radius:50%;background:#22263a;border:0.5px solid #3d4166;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#6c8ef5;font-family:'JetBrains Mono',monospace}
+  .ib{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#8b90a8;cursor:pointer;border:none;background:transparent}
+  .ib:hover{background:#22263a;color:#e8eaf0}
+  .ib i{font-size:15px}
+  .body{display:flex;flex:1;overflow:hidden}
+  .sidebar{width:176px;background:#0f1117;border-right:0.5px solid #2e3248;display:flex;flex-direction:column;padding:8px 0;flex-shrink:0}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:7px 11px;font-size:12px;color:#8b90a8;cursor:pointer;border-radius:6px;margin:1px 6px;border:none;background:transparent;width:calc(100% - 12px);text-align:left;transition:all 0.12s}
+  .nav-item i{font-size:15px;flex-shrink:0}
+  .nav-item:hover{background:#1a1d27;color:#e8eaf0}
+  .nav-item.active{background:#22263a;color:#6c8ef5;font-weight:500}
+  .nav-item.active i{color:#6c8ef5}
+  .ns{font-size:10px;color:#3d4166;padding:10px 17px 3px;text-transform:uppercase;letter-spacing:0.07em}
+  .nd{height:0.5px;background:#2e3248;margin:6px 12px}
+  .nb{margin-top:auto}
+  .content{flex:1;overflow:hidden;display:flex;flex-direction:column;background:#12151f}
+  .tabbar{display:flex;border-bottom:0.5px solid #2e3248;background:#0f1117;padding:0 16px;gap:0;flex-shrink:0}
+  .tab{padding:10px 14px;font-size:12px;color:#8b90a8;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;transition:all 0.12s}
+  .tab.active{color:#6c8ef5;border-bottom-color:#6c8ef5;font-weight:500}
+  .pane{flex:1;overflow-y:auto;padding:16px}
+  .pg{display:none}.pg.active{display:block}
+  .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .pt{font-size:15px;font-weight:500;color:#e8eaf0}
+  .btnp{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;font-size:12px;font-weight:500;border-radius:6px;background:#22263a;color:#6c8ef5;border:0.5px solid #3d4166;cursor:pointer}
+  .btng{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;font-size:12px;border-radius:6px;background:transparent;color:#8b90a8;border:0.5px solid #2e3248;cursor:pointer}
+  .btng:hover{background:#1a1d27;color:#e8eaf0}
+  .sb{display:flex;align-items:center;gap:8px;background:#0f1117;border:0.5px solid #2e3248;border-radius:6px;padding:6px 10px;margin-bottom:12px}
+  .sb i{font-size:14px;color:#3d4166}
+  .sb span{font-size:12px;color:#3d4166}
+  .pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .pc{background:#0f1117;border:0.5px solid #2e3248;border-radius:10px;padding:12px;cursor:pointer;transition:border-color 0.12s}
+  .pc:hover{border-color:#3d4166}
+  .pc.sel{border-color:#6c8ef5}
+  .ct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px}
+  .cn{font-size:12px;font-weight:500;color:#e8eaf0}
+  .cs{font-size:11px;color:#3d4166;font-family:'JetBrains Mono',monospace;margin-bottom:5px}
+  .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500}
+  .ba{background:#0d2a1a;color:#34d399}
+  .bd{background:#1a1d27;color:#8b90a8}
+  .bt{background:#2a2000;color:#fbbf24}
+  .bm{background:#1a1d27;color:#8b90a8;font-family:'JetBrains Mono',monospace;font-size:10px}
+  .cm{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .cst{font-size:10px;color:#3d4166;display:flex;align-items:center;gap:3px}
+  .cst i{font-size:12px}
+  .vs{background:#0f1117;border:0.5px solid #2e3248;border-radius:10px;padding:14px;margin-bottom:12px}
+  .sl{font-size:10px;color:#8b90a8;font-weight:500;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em}
+  .tl{display:flex;align-items:center;overflow-x:auto;padding:10px 0 6px;position:relative}
+  .tltr{position:absolute;top:21px;left:4px;right:4px;height:1.5px;background:#2e3248;z-index:0}
+  .tln{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;z-index:1;flex-shrink:0;width:54px;cursor:pointer}
+  .tld{width:24px;height:24px;border-radius:50%;border:1.5px solid #2e3248;background:#0f1117;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;color:#8b90a8;font-family:'JetBrains Mono',monospace;transition:all 0.12s}
+  .tld.act{border-color:#6c8ef5;background:#22263a;color:#6c8ef5}
+  .tld.sel{border-color:#8b90a8;background:#1a1d27;color:#e8eaf0;box-shadow:0 0 0 3px #2e3248}
+  .tll{font-size:9px;color:#3d4166;text-align:center;line-height:1.3}
+  .tll.al{color:#6c8ef5;font-weight:500}
+  .tlc{width:26px;height:1.5px;background:#2e3248;flex-shrink:0;position:relative;z-index:0;margin-top:-16px}
+  .esplit{display:grid;grid-template-columns:1fr 196px;gap:10px}
+  .eb{background:#0f1117;border:0.5px solid #2e3248;border-radius:10px;padding:12px}
+  .el{font-size:10px;color:#3d4166;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-weight:500}
+  .ca{background:#0a0d14;border:0.5px solid #2e3248;border-radius:6px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8b90a8;line-height:1.7;min-height:78px}
+  .vt{color:#fbbf24;background:#2a2000;border-radius:3px;padding:0 2px}
+  .pr{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid #1a1d27}
+  .pr:last-child{border-bottom:none}
+  .pn{font-size:11px;color:#8b90a8}
+  .pv{font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#e8eaf0}
+  .mp{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#1a1d27;border:0.5px solid #2e3248;border-radius:6px;margin-bottom:8px;cursor:pointer}
+  .md{width:8px;height:8px;border-radius:50%;background:#34d399;flex-shrink:0}
+  .mn{font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#e8eaf0}
+  .mc{font-size:10px;color:#3d4166;margin-left:auto}
+  .ar{display:flex;gap:6px;margin-top:10px}
+  .pgsplit{display:grid;grid-template-columns:1fr 156px;gap:10px}
+  .pgo{background:#0a0d14;border:0.5px solid #2e3248;border-radius:6px;padding:10px;font-size:11px;color:#e8eaf0;line-height:1.7;min-height:90px;font-family:'JetBrains Mono',monospace}
+  .pgm{display:flex;flex-direction:column;gap:6px}
+  .mc2{background:#1a1d27;border-radius:6px;padding:8px;text-align:center}
+  .mv{font-size:14px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#e8eaf0}
+  .ml{font-size:10px;color:#3d4166;margin-top:2px}
+  .vi{background:#1a1d27;border:0.5px solid #2e3248;border-radius:6px;padding:5px 8px;font-size:11px;color:#e8eaf0;width:100%;font-family:inherit;background-color:#0f1117}
+  .runbtn{display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;font-size:11px;font-weight:500;border-radius:6px;background:#0d2a1a;color:#34d399;border:0.5px solid #1d5c35;cursor:pointer;margin-top:4px}
+  .grlist{display:flex;flex-direction:column;gap:8px}
+  .grc{background:#0f1117;border:0.5px solid #2e3248;border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:10px}
+  .gri{width:32px;height:32px;border-radius:6px;background:#2a2000;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .gri i{font-size:16px;color:#fbbf24}
+  .gri.r{background:#2a0d0d}.gri.r i{color:#f87171}
+  .gri.b{background:#0d1a2a}.gri.b i{color:#6c8ef5}
+  .gi{flex:1}
+  .gn{font-size:12px;font-weight:500;color:#e8eaf0}
+  .gd{font-size:11px;color:#3d4166;margin-top:1px}
+  .gr2{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .tog{width:32px;height:18px;border-radius:9px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0}
+  .tog.on{background:#0d2a1a}
+  .tog.off{background:#1a1d27;border:0.5px solid #2e3248}
+  .togk{width:14px;height:14px;border-radius:50%;background:#e8eaf0;position:absolute;top:2px;transition:left 0.2s}
+  .tog.on .togk{left:16px}
+  .tog.off .togk{left:2px}
+  .krow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .kc{background:#0f1117;border-radius:8px;padding:10px 12px}
+  .kv{font-size:18px;font-weight:500;font-family:'JetBrains Mono',monospace;color:#e8eaf0}
+  .kl{font-size:10px;color:#3d4166;margin-top:2px}
+  .kd{font-size:10px;margin-top:3px;display:flex;align-items:center;gap:2px}
+  .du{color:#34d399}.dd{color:#f87171}
+  .chta{background:#0f1117;border:0.5px solid #2e3248;border-radius:10px;padding:12px;margin-bottom:10px}
+  .chl{font-size:11px;color:#8b90a8;font-weight:500;margin-bottom:8px}
+  .cht{height:80px;display:flex;align-items:flex-end;gap:4px}
+  .bar{border-radius:3px 3px 0 0;flex:1;min-width:0}
+  .cftck{display:flex;justify-content:space-between;margin-top:4px}
+  .ctick{font-size:9px;color:#3d4166}
+  .tplain{width:100%;border-collapse:collapse}
+  .tplain th{font-size:10px;color:#3d4166;text-transform:uppercase;letter-spacing:0.05em;padding:5px 8px;text-align:left;border-bottom:0.5px solid #2e3248}
+  .tplain td{font-size:11px;padding:7px 8px;border-bottom:0.5px solid #1a1d27;color:#e8eaf0}
+  .tplain tr:last-child td{border-bottom:none}
+  .tplain td.mono{font-family:'JetBrains Mono',monospace;font-size:10px;color:#8b90a8}
+  </style>
+  
+  <h2 class="sr-only">AIPlane — interactive UI mockup with logo, showing Prompts, Guardrails, and Usage pages</h2>
+  
+  <div class="shell">
+  
+    <div class="topbar">
+      <div class="logo-mark">
+        <svg class="logo-svg" width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AIPlane logo mark">
+          <rect width="32" height="32" rx="7" fill="#1a1d27"/>
+          <path d="M6 19 L16 6 L26 19 L20 19 L20 27 L12 27 L12 19 Z" fill="#6c8ef5" fill-opacity="0.15" stroke="#6c8ef5" stroke-width="1.3" stroke-linejoin="round"/>
+          <path d="M16 6 L16 27" stroke="#6c8ef5" stroke-width="0.9" stroke-opacity="0.4" fill="none"/>
+          <circle cx="16" cy="16" r="2.8" fill="#6c8ef5"/>
+          <path d="M9 17.5 L13.2 17.5" stroke="#6c8ef5" stroke-width="1" stroke-opacity="0.5" fill="none"/>
+          <path d="M18.8 17.5 L23 17.5" stroke="#6c8ef5" stroke-width="1" stroke-opacity="0.5" fill="none"/>
+        </svg>
+        <span class="logo-wordmark"><span class="ai">AI</span><span class="pl">Plane</span></span>
+      </div>
+      <div class="divider-v"></div>
+      <div class="proj-switcher"><i class="ti ti-layout-grid" style="font-size:13px" aria-hidden="true"></i> news-radar <i class="ti ti-chevron-down" style="font-size:12px" aria-hidden="true"></i></div>
+      <div class="topbar-right">
+        <button class="ib" aria-label="Search (⌘K)"><i class="ti ti-search" aria-hidden="true"></i></button>
+        <button class="ib" aria-label="Notifications"><i class="ti ti-bell" aria-hidden="true"></i></button>
+        <button class="ib" aria-label="Settings"><i class="ti ti-settings" aria-hidden="true"></i></button>
+        <div class="divider-v"></div>
+        <div class="avatar" title="madmmas">MM</div>
+      </div>
+    </div>
+  
+    <div class="body">
+      <div class="sidebar">
+        <div class="ns">Manage</div>
+        <button class="nav-item active" onclick="showPage('prompts',this)"><i class="ti ti-messages" aria-hidden="true"></i> Prompts</button>
+        <button class="nav-item" onclick="showPage('guardrails',this)"><i class="ti ti-shield-check" aria-hidden="true"></i> Guardrails</button>
+        <button class="nav-item" onclick="showPage('users',this)"><i class="ti ti-users" aria-hidden="true"></i> Users</button>
+        <button class="nav-item" onclick="showPage('usage',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i> Usage</button>
+        <div class="nd"></div>
+        <div class="ns">Config</div>
+        <button class="nav-item" onclick="showPage('providers',this)"><i class="ti ti-plug" aria-hidden="true"></i> Providers</button>
+        <button class="nav-item" onclick="showPage('apikeys',this)"><i class="ti ti-key" aria-hidden="true"></i> API Keys</button>
+        <div class="nb">
+          <div class="nd"></div>
+          <button class="nav-item"><i class="ti ti-book" aria-hidden="true"></i> Docs</button>
+          <button class="nav-item"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</button>
+        </div>
+      </div>
+  
+      <div class="content">
+        <div class="tabbar" id="tabbar">
+          <div class="tab active" onclick="showTab('library',this)">Library</div>
+          <div class="tab" onclick="showTab('editor',this)" id="tab-editor">Editor</div>
+          <div class="tab" onclick="showTab('playground',this)">Playground</div>
+        </div>
+  
+        <div class="pane" id="main-pane">
+  
+          <div id="page-prompts" class="pg active">
+            <div id="sub-library" class="pg active">
+              <div class="ph"><div class="pt">Prompts</div><button class="btnp"><i class="ti ti-plus" aria-hidden="true"></i> New prompt</button></div>
+              <div class="sb"><i class="ti ti-search" aria-hidden="true"></i><span>Search prompts…</span></div>
+              <div class="pgrid">
+                <div class="pc sel" onclick="selectPrompt(this)">
+                  <div class="ct"><div><div class="cn">Dedup Judge</div><div class="cs">news-radar/dedup-judge</div></div><span class="badge ba"><i class="ti ti-circle-filled" style="font-size:8px" aria-hidden="true"></i> active</span></div>
+                  <div class="cm"><span class="badge bm">claude-haiku-4-5</span><span class="cst"><i class="ti ti-versions" aria-hidden="true"></i> v6</span><span class="cst"><i class="ti ti-clock" aria-hidden="true"></i> 124ms</span></div>
+                </div>
+                <div class="pc" onclick="selectPrompt(this)">
+                  <div class="ct"><div><div class="cn">Call Summary</div><div class="cs">ackloop/call-summary</div></div><span class="badge ba"><i class="ti ti-circle-filled" style="font-size:8px" aria-hidden="true"></i> active</span></div>
+                  <div class="cm"><span class="badge bm">claude-sonnet-4-6</span><span class="cst"><i class="ti ti-versions" aria-hidden="true"></i> v3</span><span class="cst"><i class="ti ti-clock" aria-hidden="true"></i> 890ms</span></div>
+                </div>
+                <div class="pc" onclick="selectPrompt(this)">
+                  <div class="ct"><div><div class="cn">Category Classifier</div><div class="cs">news-radar/category</div></div><span class="badge bt"><i class="ti ti-circle-filled" style="font-size:8px" aria-hidden="true"></i> testing</span></div>
+                  <div class="cm"><span class="badge bm">gpt-4o-mini</span><span class="cst"><i class="ti ti-versions" aria-hidden="true"></i> v2</span><span class="cst"><i class="ti ti-clock" aria-hidden="true"></i> 312ms</span></div>
+                </div>
+                <div class="pc" onclick="selectPrompt(this)">
+                  <div class="ct"><div><div class="cn">Sentiment Extractor</div><div class="cs">news-radar/sentiment</div></div><span class="badge bd">draft</span></div>
+                  <div class="cm"><span class="badge bm">claude-haiku-4-5</span><span class="cst"><i class="ti ti-versions" aria-hidden="true"></i> v1</span></div>
+                </div>
+              </div>
+            </div>
+  
+            <div id="sub-editor" class="pg">
+              <div class="vs">
+                <div class="sl">Version history — news-radar/dedup-judge</div>
+                <div style="position:relative">
+                  <div class="tltr"></div>
+                  <div class="tl">
+                    <div class="tln" onclick="selVer(this)"><div class="tld">1</div><div class="tll">draft<br>Jan 12</div></div>
+                    <div class="tlc"></div>
+                    <div class="tln" onclick="selVer(this)"><div class="tld">2</div><div class="tll">archived<br>Feb 3</div></div>
+                    <div class="tlc"></div>
+                    <div class="tln" onclick="selVer(this)"><div class="tld">3</div><div class="tll">archived<br>Mar 1</div></div>
+                    <div class="tlc"></div>
+                    <div class="tln" onclick="selVer(this)"><div class="tld sel">4</div><div class="tll">testing<br>Apr 20</div></div>
+                    <div class="tlc"></div>
+                    <div class="tln" onclick="selVer(this)"><div class="tld">5</div><div class="tll">archived<br>May 5</div></div>
+                    <div class="tlc"></div>
+                    <div class="tln" onclick="selVer(this)"><div class="tld act">6</div><div class="tll al">active<br>Jun 10</div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="esplit">
+                <div>
+                  <div class="eb" style="margin-bottom:8px">
+                    <div class="el">System prompt</div>
+                    <div class="ca">You are a deduplication judge for a Bangla/English news pipeline. Given two article summaries, determine if they describe the same event.</div>
+                  </div>
+                  <div class="eb">
+                    <div class="el">User prompt template</div>
+                    <div class="ca">Article A: <span class="vt">{{article_a}}</span><br>Article B: <span class="vt">{{article_b}}</span><br><br>Return JSON: {"duplicate": bool, "confidence": 0-1}</div>
+                  </div>
+                  <div class="ar">
+                    <button class="btng"><i class="ti ti-git-branch" aria-hidden="true"></i> Fork</button>
+                    <button class="btng"><i class="ti ti-diff" aria-hidden="true"></i> Diff</button>
+                    <button class="btng" style="margin-left:auto"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save</button>
+                    <button class="btnp"><i class="ti ti-arrow-up-circle" aria-hidden="true"></i> Promote</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="eb" style="margin-bottom:8px">
+                    <div class="mp"><div class="md"></div><div class="mn">claude-haiku-4-5</div><i class="ti ti-chevron-down" style="font-size:12px;color:#3d4166" aria-hidden="true"></i><div class="mc">200k</div></div>
+                    <div class="el">Parameters</div>
+                    <div class="pr"><span class="pn">Temperature</span><span class="pv">0.1</span></div>
+                    <div class="pr"><span class="pn">Max tokens</span><span class="pv">512</span></div>
+                    <div class="pr"><span class="pn">Top P</span><span class="pv">1.0</span></div>
+                  </div>
+                  <div class="eb">
+                    <div class="el">v6 metrics</div>
+                    <div class="pr"><span class="pn">Calls</span><span class="pv">14.2k</span></div>
+                    <div class="pr"><span class="pn">Avg latency</span><span class="pv">124ms</span></div>
+                    <div class="pr"><span class="pn">Avg cost</span><span class="pv">$0.0003</span></div>
+                    <div class="pr"><span class="pn">Success</span><span class="pv">99.7%</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div id="sub-playground" class="pg">
+              <div class="ph" style="margin-bottom:12px">
+                <div style="font-size:12px;color:#8b90a8">Testing <strong style="color:#e8eaf0">news-radar/dedup-judge</strong> · v6 (active)</div>
+                <button class="btng" style="font-size:11px"><i class="ti ti-columns" aria-hidden="true"></i> Compare</button>
+              </div>
+              <div class="pgsplit">
+                <div>
+                  <div class="eb" style="margin-bottom:8px">
+                    <div class="el">Variables</div>
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <div><div style="font-size:10px;color:#3d4166;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">article_a</div><input class="vi" value="Bangladesh PM visits Dhaka flood zones"/></div>
+                      <div><div style="font-size:10px;color:#3d4166;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px">article_b</div><input class="vi" value="PM tours flood-hit areas in Dhaka"/></div>
+                    </div>
+                    <button class="runbtn"><i class="ti ti-player-play" aria-hidden="true"></i> Run <span style="font-size:10px;opacity:0.6">⌘↵</span></button>
+                  </div>
+                  <div class="eb">
+                    <div class="el">Response</div>
+                    <div class="pgo">{"duplicate": true, "confidence": 0.94, "reason": "Same event — PM visiting flood-affected Dhaka. Different phrasing only."}</div>
+                  </div>
+                </div>
+                <div class="pgm">
+                  <div class="mc2"><div class="mv">94ms</div><div class="ml">Latency</div></div>
+                  <div class="mc2"><div class="mv">187</div><div class="ml">Input tokens</div></div>
+                  <div class="mc2"><div class="mv">62</div><div class="ml">Output tokens</div></div>
+                  <div class="mc2"><div class="mv">$0.0002</div><div class="ml">Cost</div></div>
+                  <button class="btng" style="font-size:11px;margin-top:2px"><i class="ti ti-bookmark" aria-hidden="true"></i> Save test</button>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div id="page-guardrails" class="pg">
+            <div class="ph"><div class="pt">Guardrails</div><button class="btnp"><i class="ti ti-plus" aria-hidden="true"></i> New guardrail</button></div>
+            <div class="sb"><i class="ti ti-search" aria-hidden="true"></i><span>Search guardrails…</span></div>
+            <div class="grlist">
+              <div class="grc"><div class="gri"><i class="ti ti-ban" aria-hidden="true"></i></div><div class="gi"><div class="gn">Keyword blocklist</div><div class="gd">output · blocks: propaganda, fake news +12</div></div><div class="gr2"><span class="badge ba">block</span><div class="tog on" onclick="this.classList.toggle('on');this.classList.toggle('off')" aria-label="Toggle"><div class="togk"></div></div></div></div>
+              <div class="grc"><div class="gri r"><i class="ti ti-user-shield" aria-hidden="true"></i></div><div class="gi"><div class="gn">PII detection</div><div class="gd">input + output · EMAIL, PHONE, NID</div></div><div class="gr2"><span class="badge bt">redact</span><div class="tog on" onclick="this.classList.toggle('on');this.classList.toggle('off')" aria-label="Toggle"><div class="togk"></div></div></div></div>
+              <div class="grc"><div class="gri b"><i class="ti ti-robot" aria-hidden="true"></i></div><div class="gi"><div class="gn">LLM judge — quality</div><div class="gd">output · uses news-radar/quality-check</div></div><div class="gr2"><span class="badge bd">log-only</span><div class="tog off" onclick="this.classList.toggle('on');this.classList.toggle('off')" aria-label="Toggle"><div class="togk"></div></div></div></div>
+              <div class="grc"><div class="gri"><i class="ti ti-ruler" aria-hidden="true"></i></div><div class="gi"><div class="gn">Max length</div><div class="gd">output · max 2048 chars</div></div><div class="gr2"><span class="badge ba">block</span><div class="tog on" onclick="this.classList.toggle('on');this.classList.toggle('off')" aria-label="Toggle"><div class="togk"></div></div></div></div>
+            </div>
+          </div>
+  
+          <div id="page-usage" class="pg">
+            <div class="ph"><div class="pt">Usage — June 2026</div><button class="btng" style="font-size:11px"><i class="ti ti-download" aria-hidden="true"></i> Export CSV</button></div>
+            <div class="krow">
+              <div class="kc"><div class="kv">48.3k</div><div class="kl">Total calls</div><div class="kd du"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i> +12% vs May</div></div>
+              <div class="kc"><div class="kv">$4.17</div><div class="kl">Total cost</div><div class="kd du"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i> +8% vs May</div></div>
+              <div class="kc"><div class="kv">137ms</div><div class="kl">Avg latency</div><div class="kd dd"><i class="ti ti-trending-down" style="font-size:11px" aria-hidden="true"></i> −6% vs May</div></div>
+              <div class="kc"><div class="kv">99.4%</div><div class="kl">Success rate</div><div class="kd du"><i class="ti ti-trending-up" style="font-size:11px" aria-hidden="true"></i> +0.2%</div></div>
+            </div>
+            <div class="chta">
+              <div class="chl">Daily calls — last 14 days</div>
+              <div class="cht" id="cht"></div>
+              <div class="cftck" id="ticks"></div>
+            </div>
+            <div class="eb">
+              <div class="el" style="margin-bottom:8px">Top prompts by cost</div>
+              <table class="tplain">
+                <thead><tr><th>Prompt</th><th>Calls</th><th>Avg tokens</th><th>Total cost</th></tr></thead>
+                <tbody>
+                  <tr><td class="mono">news-radar/dedup-judge</td><td>28.1k</td><td>249</td><td>$2.31</td></tr>
+                  <tr><td class="mono">ackloop/call-summary</td><td>6.4k</td><td>1,102</td><td>$1.18</td></tr>
+                  <tr><td class="mono">news-radar/category</td><td>9.8k</td><td>183</td><td>$0.47</td></tr>
+                  <tr><td class="mono">news-radar/sentiment</td><td>4.0k</td><td>127</td><td>$0.21</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+  
+          <div id="page-users" class="pg"><div class="ph"><div class="pt">Users</div><button class="btnp"><i class="ti ti-user-plus" aria-hidden="true"></i> Invite user</button></div><div style="text-align:center;padding:40px 0;color:#3d4166"><i class="ti ti-users" style="font-size:36px;display:block;margin-bottom:10px" aria-hidden="true"></i><div style="font-size:12px">User management</div></div></div>
+          <div id="page-providers" class="pg"><div class="ph"><div class="pt">Providers</div></div><div style="text-align:center;padding:40px 0;color:#3d4166"><i class="ti ti-plug" style="font-size:36px;display:block;margin-bottom:10px" aria-hidden="true"></i><div style="font-size:12px">LLM provider config</div></div></div>
+          <div id="page-apikeys" class="pg"><div class="ph"><div class="pt">API Keys</div><button class="btnp"><i class="ti ti-plus" aria-hidden="true"></i> New key</button></div><div style="text-align:center;padding:40px 0;color:#3d4166"><i class="ti ti-key" style="font-size:36px;display:block;margin-bottom:10px" aria-hidden="true"></i><div style="font-size:12px">API key management</div></div></div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  function showPage(name,el){
+    document.querySelectorAll('.pg[id^="page-"]').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('tabbar').style.display=name==='prompts'?'flex':'none';
+  }
+  function showTab(name,el){
+    document.querySelectorAll('#page-prompts .pg').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('sub-'+name).classList.add('active');
+    el.classList.add('active');
+  }
+  function selectPrompt(card){
+    document.querySelectorAll('.pc').forEach(c=>c.classList.remove('sel'));
+    card.classList.add('sel');
+    showTab('editor',document.getElementById('tab-editor'));
+  }
+  function selVer(node){
+    document.querySelectorAll('.tld').forEach(d=>{if(!d.classList.contains('act'))d.classList.remove('sel')});
+    const d=node.querySelector('.tld');
+    if(!d.classList.contains('act'))d.classList.add('sel');
+  }
+  const days=['Jun 14','Jun 15','Jun 16','Jun 17','Jun 18','Jun 19','Jun 20','Jun 21','Jun 22','Jun 23','Jun 24','Jun 25','Jun 26','Jun 27'];
+  const vals=[2800,3100,2600,3400,3800,1200,1100,3600,4100,4300,3900,4400,4700,4200];
+  const max=Math.max(...vals);
+  const cht=document.getElementById('cht');
+  const ticks=document.getElementById('ticks');
+  vals.forEach((v,i)=>{
+    const b=document.createElement('div');
+    b.className='bar';
+    b.style.cssText=`height:${Math.round((v/max)*100)}%;background:#6c8ef5;opacity:${i===vals.length-1?0.45:0.75}`;
+    b.title=`${days[i]}: ${v.toLocaleString()} calls`;
+    cht.appendChild(b);
+  });
+  [days[0],days[3],days[6],days[9],days[12]].forEach(d=>{
+    const t=document.createElement('div');
+    t.className='ctick';
+    t.textContent=d.slice(4);
+    ticks.appendChild(t);
+  });
+  </script>
+  

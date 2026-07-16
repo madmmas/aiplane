@@ -1,0 +1,25 @@
+---
+description: TypeScript strict-mode and Biome code style rules.
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript & Biome Style Rules
+
+## TypeScript
+- Strict mode is on (`strict`, `noUnusedLocals`, `noUnusedParameters`,
+  `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`). Don't write code that
+  requires loosening these.
+- Path alias `@/*` maps to each app's `src/*` — use it instead of deep relative
+  imports (`../../..`) within an app.
+- `moduleResolution: bundler`, `noEmit: true` — type checking is separate from
+  building (`tsc --noEmit` runs before `vite build` in each app's `build` script).
+
+## Code style (enforced by Biome, `biome.json` at repo root)
+- 2-space indentation, 100-char line width
+- Double quotes, semicolons always
+- Organize imports is enabled — don't hand-order imports against what Biome would produce
+- Run `pnpm lint` (check) or `pnpm lint:fix` (autofix) rather than reformatting by hand
+- Don't introduce ESLint, Prettier, or their config files — this repo standardized on Biome

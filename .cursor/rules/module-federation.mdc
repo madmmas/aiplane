@@ -1,0 +1,31 @@
+---
+description: Module Federation conventions for the dashboard host and its remotes.
+globs:
+  - apps/*/vite.config.ts
+  - apps/dashboard/src/**
+  - apps/*/src/main.tsx
+  - apps/*/src/App.tsx
+alwaysApply: false
+---
+
+# Module Federation Conventions
+
+- Remote apps expose modules; the dashboard consumes them via the `remotes` map in
+  `apps/dashboard/vite.config.ts`. When adding a new exposed module or remote entry,
+  update both the exposing app's federation config and the dashboard's `remotes` map.
+- `react` and `react-dom` are shared as singletons across federation boundaries — do
+  not introduce a second copy or a conflicting version range in any app's
+  `shared` config without checking every other app.
+- Federated modules load from `http://localhost:<port>/remoteEntry.js` in dev. Don't
+  hardcode these URLs outside vite config; keep ports consistent with the table in
+  `README.md`:
+  - dashboard (host): 5173
+  - prompt-manager: 5174
+  - guardrail: 5175
+  - user-manager: 5176
+  - usages-data: 5177
+- Be cautious with global/shared state across federation boundaries — each remote is
+  a separately bundled app and can't assume in-memory state from another remote.
+- When scaffolding a new remote app, mirror the existing `vite.config.ts` federation
+  block (name, exposes, shared react/react-dom singletons) and wire it into the
+  dashboard's `remotes` map before considering the app "integrated."
