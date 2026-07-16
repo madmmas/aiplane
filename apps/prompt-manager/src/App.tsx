@@ -2,7 +2,7 @@ export default function App() {
   return (
     <div>
       <h2>Prompt Manager</h2>
-      <p>Manage prompts for the AI Manager.</p>
+      <p>Manage prompts for the AIPlane.</p>
     </div>
   );
 }
