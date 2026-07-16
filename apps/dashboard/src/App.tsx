@@ -65,7 +65,7 @@ export default function App() {
           gap: "1rem",
         }}
       >
-        <h1 style={{ margin: 0, fontSize: "1.25rem" }}>AI Manager</h1>
+        <h1 style={{ margin: 0, fontSize: "1.25rem" }}>AIPlane</h1>
         <nav style={{ display: "flex", gap: "0.5rem" }}>
           {TABS.map(({ id, label }) => (
             <button
@@ -87,9 +87,7 @@ export default function App() {
       </header>
       <main style={{ flex: 1, padding: "1.5rem" }}>
         {activeTab === "dashboard" && (
-          <p>
-            Welcome to the AI Manager dashboard. Use the tabs above to open each micro-frontend.
-          </p>
+          <p>Welcome to the AIPlane dashboard. Use the tabs above to open each micro-frontend.</p>
         )}
         {activeTab === "promptManager" && (
           <RemoteErrorBoundary fallback={<div>Failed to load Prompt Manager.</div>}>
