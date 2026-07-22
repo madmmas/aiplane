@@ -1,7 +1,13 @@
+import type { Project } from "@repo/types";
+import { cn } from "@repo/ui";
+import { IconBell, IconLayoutSidebar, IconSearch, IconSettings, IconX } from "@tabler/icons-react";
 import { useCallback, useEffect, useState } from "react";
+import { useShellBreakpoint } from "../hooks/use-shell-breakpoint";
 import { useTheme } from "../hooks/use-theme";
+import type { NavId } from "../lib/nav";
 import { AppSidebar } from "./app-sidebar";
 import { BrandLogo } from "./brand-logo";
+import { ProjectSwitcher } from "./project-switcher";
 import { ThemeSwitcher } from "./theme-switcher";
 
 const SIDEBAR_STORAGE_KEY = "aiplane-sidebar-open";
@@ -14,19 +20,27 @@ function getStoredSidebarOpen(): boolean {
 }
 
 interface DashboardLayoutProps {
+  activeId: NavId;
+  onSelectNav: (id: NavId) => void;
+  project: Project | null;
+  onProjectChange: (project: Project) => void;
   children: React.ReactNode;
-  /** Optional controls rendered in the topbar (e.g. app tabs). */
-  topbarNav?: React.ReactNode;
 }
 
 /**
- * Minimal host shell chrome for brand assets (#6).
- * Full mock layout (nav icons, tokens, etc.) lands in #10.
+ * Host shell: 48px topbar + 160px / 48px sidebar (SPEC §5.1, mock layout).
+ * Responsive: desktop expanded, compact icon-only, mobile overlay drawer.
  */
-export function DashboardLayout({ children, topbarNav }: DashboardLayoutProps) {
+export function DashboardLayout({
+  activeId,
+  onSelectNav,
+  project,
+  onProjectChange,
+  children,
+}: DashboardLayoutProps) {
   const { theme } = useTheme();
+  const breakpoint = useShellBreakpoint();
   const [sidebarOpen, setSidebarOpen] = useState(getStoredSidebarOpen);
-  const collapsed = !sidebarOpen;
 
   const toggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => {
@@ -47,62 +61,103 @@ export function DashboardLayout({ children, topbarNav }: DashboardLayoutProps) {
     return () => window.removeEventListener("keydown", handler);
   }, [toggleSidebar]);
 
-  const isDark = theme === "dark";
-  const border = isDark ? "#2e3248" : "#e5e5e5";
+  // SPEC: <1280 icon-only unless user forces open on mobile overlay.
+  const iconOnly = breakpoint === "compact" || (breakpoint === "desktop" && !sidebarOpen);
+  const mobileDrawerOpen = breakpoint === "mobile" && sidebarOpen;
+  const showFixedSidebar = breakpoint !== "mobile";
+
+  const handleSelectNav = (id: NavId) => {
+    onSelectNav(id);
+    if (breakpoint === "mobile") {
+      setSidebarOpen(false);
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, "false");
+    }
+  };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        width: "100%",
-        background: isDark ? "#0f1117" : "#ffffff",
-        color: isDark ? "#e8eaf0" : "#1a1d27",
-      }}
-    >
-      <AppSidebar theme={theme} collapsed={collapsed} />
-      <div style={{ display: "flex", flex: 1, flexDirection: "column", minWidth: 0 }}>
-        <header
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            height: "3rem",
-            padding: "0 1rem",
-            borderBottom: `1px solid ${border}`,
-            background: isDark ? "rgba(15,17,23,0.85)" : "rgba(255,255,255,0.85)",
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-          }}
+    <div className="flex min-h-svh w-full flex-col bg-background text-foreground">
+      <header className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-background/90 px-3.5 backdrop-blur-md">
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          aria-expanded={breakpoint === "mobile" ? mobileDrawerOpen : !iconOnly}
+          className={cn(
+            "inline-flex size-7 items-center justify-center rounded-md text-muted-foreground",
+            "transition-colors hover:bg-surface-raised hover:text-foreground",
+          )}
         >
+          {mobileDrawerOpen ? (
+            <IconX className="size-4" aria-hidden />
+          ) : (
+            <IconLayoutSidebar className="size-4" aria-hidden />
+          )}
+        </button>
+
+        <BrandLogo theme={theme} collapsed height={24} />
+        <div className="hidden h-5 w-px bg-border sm:block" />
+        <ProjectSwitcher project={project} onProjectChange={onProjectChange} />
+
+        <div className="ml-auto flex items-center gap-1.5">
           <button
             type="button"
-            onClick={toggleSidebar}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            aria-expanded={!collapsed}
-            style={{
-              padding: "0.35rem 0.6rem",
-              border: `1px solid ${border}`,
-              borderRadius: "4px",
-              background: "transparent",
-              cursor: "pointer",
-              fontSize: "0.875rem",
-              color: "inherit",
-            }}
+            aria-label="Search (⌘K)"
+            className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-raised hover:text-foreground"
           >
-            {collapsed ? "»" : "«"}
+            <IconSearch className="size-4" aria-hidden />
           </button>
-          {/* Topbar brand: icon when sidebar is collapsed so the mark stays visible. */}
-          {collapsed ? <BrandLogo theme={theme} collapsed height={24} /> : null}
-          <div
-            style={{ display: "flex", flex: 1, alignItems: "center", gap: "0.5rem", minWidth: 0 }}
+          <button
+            type="button"
+            aria-label="Notifications"
+            className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-raised hover:text-foreground"
           >
-            {topbarNav}
-          </div>
+            <IconBell className="size-4" aria-hidden />
+          </button>
+          <button
+            type="button"
+            aria-label="Settings"
+            className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-surface-raised hover:text-foreground"
+          >
+            <IconSettings className="size-4" aria-hidden />
+          </button>
           <ThemeSwitcher />
-        </header>
-        <main style={{ flex: 1, padding: "1.5rem", overflow: "auto" }}>{children}</main>
+          <div className="mx-1 hidden h-5 w-px bg-border sm:block" />
+          <div
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-surface-raised font-mono text-[10px] font-medium text-accent"
+            title="madmmas"
+            aria-label="Account"
+          >
+            MM
+          </div>
+        </div>
+      </header>
+
+      <div className="relative flex min-h-0 flex-1">
+        {showFixedSidebar ? (
+          <AppSidebar activeId={activeId} onSelect={handleSelectNav} collapsed={iconOnly} />
+        ) : null}
+
+        {mobileDrawerOpen ? (
+          <>
+            <button
+              type="button"
+              aria-label="Close navigation"
+              className="absolute inset-0 z-30 bg-black/50"
+              onClick={() => {
+                setSidebarOpen(false);
+                localStorage.setItem(SIDEBAR_STORAGE_KEY, "false");
+              }}
+            />
+            <AppSidebar
+              activeId={activeId}
+              onSelect={handleSelectNav}
+              collapsed={false}
+              className="absolute inset-y-0 left-0 z-40 shadow-xl"
+            />
+          </>
+        ) : null}
+
+        <main className="min-w-0 flex-1 overflow-auto bg-code-bg p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

@@ -1,60 +1,31 @@
-import type { ThemeMode } from "../hooks/use-theme";
-import { BrandLogo } from "./brand-logo";
+import { cn } from "@repo/ui";
+import type { NavId } from "../lib/nav";
+import { SidebarNav } from "./sidebar-nav";
 
-const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_COLLAPSED = "3.5rem";
+/** Expanded sidebar width (SPEC §5.1 / issue #10: 160px). */
+export const SIDEBAR_WIDTH_PX = 160;
+/** Icon-only collapsed width. */
+export const SIDEBAR_COLLAPSED_PX = 48;
 
 interface AppSidebarProps {
-  theme: ThemeMode;
+  activeId: NavId;
+  onSelect: (id: NavId) => void;
   collapsed: boolean;
+  className?: string;
 }
 
-/**
- * Host chrome sidebar that owns the brand mark.
- * Expanded → theme-aware wordmark; collapsed → icon-only mark.
- */
-export function AppSidebar({ theme, collapsed }: AppSidebarProps) {
-  const isDark = theme === "dark";
-  const border = isDark ? "#2e3248" : "#e5e5e5";
-
+export function AppSidebar({ activeId, onSelect, collapsed, className }: AppSidebarProps) {
   return (
     <aside
-      aria-label="AIPlane brand"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH,
-        flexShrink: 0,
-        borderRight: `1px solid ${border}`,
-        background: isDark ? "#0f1117" : "#ffffff",
-        color: isDark ? "#e8eaf0" : "#1a1d27",
-        transition: "width 200ms ease",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: collapsed ? "center" : "flex-start",
-          height: "3rem",
-          padding: collapsed ? "0.5rem" : "0.5rem 0.75rem",
-          borderBottom: `1px solid ${border}`,
-          overflow: "hidden",
-        }}
-      >
-        <BrandLogo theme={theme} collapsed={collapsed} />
-      </div>
-      {!collapsed && (
-        <div
-          style={{
-            padding: "0.75rem",
-            fontSize: "0.75rem",
-            opacity: 0.65,
-          }}
-        >
-          Micro-frontend host
-        </div>
+      aria-label="Application"
+      className={cn(
+        "flex h-full shrink-0 flex-col border-r border-border bg-background text-foreground",
+        "transition-[width] duration-200 ease-linear",
+        className,
       )}
+      style={{ width: collapsed ? SIDEBAR_COLLAPSED_PX : SIDEBAR_WIDTH_PX }}
+    >
+      <SidebarNav activeId={activeId} onSelect={onSelect} collapsed={collapsed} />
     </aside>
   );
 }
