@@ -57,6 +57,14 @@ For product intent, architecture decisions, and the full roadmap, see [`docs/SPE
 2. Make your changes with clear, focused commits. Link the issue (`Closes #N` in the PR body).
 3. Fill out the pull request template completely.
 4. Ensure the required `ci` check passes (lint → typecheck → build). Merges to `main` require a green `ci` status.
+5. For **user-facing** changes (features, fixes, breaking behavior), add an entry under
+   `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md) in the same PR — Keep a Changelog
+   categories (`Added` / `Changed` / `Fixed` / `Removed` / `Deprecated` / `Security`).
+   Pure chores, internal refactors, and docs-only PRs do not need a CHANGELOG line unless
+   they affect how users or downstream apps consume the project.
+
+Code owners listed in [`.github/CODEOWNERS`](.github/CODEOWNERS) are auto-requested for review
+on matching paths.
 
 ## Code of conduct
 
