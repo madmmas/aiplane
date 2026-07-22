@@ -48,10 +48,10 @@ For product intent, architecture decisions, and the full roadmap, see [`docs/SPE
 
 ## Pull requests
 
-1. Create a feature branch from `main`.
-2. Make your changes with clear, focused commits.
+1. Create a feature branch from `main` (direct commits to `main` are blocked locally by Husky and on GitHub by branch protection).
+2. Make your changes with clear, focused commits. Link the issue (`Closes #N` in the PR body).
 3. Fill out the pull request template completely.
-4. Ensure CI passes (lint, typecheck, build).
+4. Ensure the required `ci` check passes (lint → typecheck → build). Merges to `main` require a green `ci` status.
 
 ## Code of conduct
 
