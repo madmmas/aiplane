@@ -53,8 +53,8 @@ For product intent, architecture decisions, and the full roadmap, see [`docs/SPE
 
 Engineering decisions and trade-offs that are not user-facing live in
 [`docs/DEVLOG.md`](docs/DEVLOG.md) (process-facing journal). User-facing shipped
-changes belong in [`CHANGELOG.md`](CHANGELOG.md) when that file is present — do not
-put "why we chose X" into the changelog or "what shipped in 0.1.0" into the DEVLOG.
+changes belong in [`CHANGELOG.md`](CHANGELOG.md) — do not put "why we chose X" into
+the changelog or "what shipped in 0.1.0" into the DEVLOG.
 
 ### When to write a DEVLOG entry
 
@@ -73,6 +73,14 @@ those are covered by the PR description and, when user-facing, the CHANGELOG.
 2. Make your changes with clear, focused commits. Link the issue (`Closes #N` in the PR body).
 3. Fill out the pull request template completely.
 4. Ensure the required `ci` check passes (lint → typecheck → test → build). Merges to `main` require a green `ci` status. The `backend` job also runs `mvn verify` (unit + Testcontainers + JaCoCo); keep it green even when it is not a required check.
+5. For **user-facing** changes (features, fixes, breaking behavior), add an entry under
+   `[Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md) in the same PR — Keep a Changelog
+   categories (`Added` / `Changed` / `Fixed` / `Removed` / `Deprecated` / `Security`).
+   Pure chores, internal refactors, and docs-only PRs do not need a CHANGELOG line unless
+   they affect how users or downstream apps consume the project.
+
+Code owners listed in [`.github/CODEOWNERS`](.github/CODEOWNERS) are auto-requested for review
+on matching paths.
 
 ## Code of conduct
 

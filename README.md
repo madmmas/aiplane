@@ -7,6 +7,7 @@ A **micro-frontend** monorepo for AI management tooling. The project uses a host
 
 For product intent, architecture, and roadmap, see [`docs/SPEC.md`](docs/SPEC.md).  
 For the issue → branch → PR workflow, see [`docs/ISSUE_WORKFLOW.md`](docs/ISSUE_WORKFLOW.md).  
+User-facing changes are tracked in [`CHANGELOG.md`](CHANGELOG.md).  
 For engineering decisions and trade-offs, see [`docs/DEVLOG.md`](docs/DEVLOG.md).
 
 Static UI reference mockups live under [`mock/`](mock/) (including brand icons in `mock/icons/`). These files are **reference-only** — not part of the runtime app — and are excluded from Biome lint.

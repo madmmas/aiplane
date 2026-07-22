@@ -1,0 +1,24 @@
+# CODEOWNERS for madmmas/aiplane
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# These owners are requested for review when someone opens a PR that
+# modifies code matching the path pattern. Last matching pattern wins.
+# Refine per-path owners as the team grows beyond a single maintainer.
+
+# Default owner for everything in the repo
+* @madmmas
+
+# Frontend apps (Module Federation host + remotes)
+/apps/ @madmmas
+
+# Shared frontend packages
+/packages/ @madmmas
+
+# Spring Boot backend
+/backend/ @madmmas
+
+# CI, templates, Dependabot
+/.github/ @madmmas
+
+# Docs and product spec
+/docs/ @madmmas
