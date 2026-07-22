@@ -6,7 +6,8 @@
 A **micro-frontend** monorepo for AI management tooling. The project uses a host/remote architecture with **Module Federation** (Vite Plugin Federation), so the dashboard loads and runs multiple independent apps as federated modules.
 
 For product intent, architecture, and roadmap, see [`docs/SPEC.md`](docs/SPEC.md).  
-For the issue → branch → PR workflow, see [`docs/ISSUE_WORKFLOW.md`](docs/ISSUE_WORKFLOW.md).
+For the issue → branch → PR workflow, see [`docs/ISSUE_WORKFLOW.md`](docs/ISSUE_WORKFLOW.md).  
+For engineering decisions and trade-offs, see [`docs/DEVLOG.md`](docs/DEVLOG.md).
 
 Static UI reference mockups live under [`mock/`](mock/) (including brand icons in `mock/icons/`). These files are **reference-only** — not part of the runtime app — and are excluded from Biome lint.
 
@@ -141,7 +142,9 @@ pnpm test:coverage                     # same + V8 coverage reports under each p
 pnpm turbo test --filter=@repo/ui      # one package
 ```
 
-CI runs `pnpm test:coverage` inside the required `ci` job (so a failing suite blocks merges) and uploads HTML/LCOV artifacts. Backend coverage comes from JaCoCo on `mvn verify` in the `backend` job.## Running a single app
+CI runs `pnpm test:coverage` inside the required `ci` job (so a failing suite blocks merges) and uploads HTML/LCOV artifacts. Backend coverage comes from JaCoCo on `mvn verify` in the `backend` job.
+
+## Running a single app
 
 From repo root, use Turbo's filter:
 
@@ -186,7 +189,8 @@ aiplane/
 ├── .env.example
 ├── docs/
 │   ├── SPEC.md           # Product spec and architecture
-│   └── ISSUE_WORKFLOW.md # Issue / branch / PR workflow
+│   ├── ISSUE_WORKFLOW.md # Issue / branch / PR workflow
+│   └── DEVLOG.md         # Engineering decisions and trade-offs
 ├── mock/                 # UI mock + brand icons (reference only)
 ├── package.json
 ├── pnpm-workspace.yaml
