@@ -31,10 +31,15 @@ Before submitting a pull request, run:
 ```bash
 pnpm lint        # Check formatting and lint rules
 pnpm typecheck   # TypeScript type checking
+pnpm test        # Vitest unit/component tests
 pnpm build       # Production build
 ```
 
-You can also use `make lint`, `make typecheck`, and `make build` as shortcuts.
+You can also use `make lint`, `make typecheck`, `make test`, and `make build` as shortcuts.
+
+### Frontend tests
+
+Colocate tests next to the file under test (`Button.tsx` → `Button.test.tsx`). Use React Testing Library queries (`getByRole`, `getByLabelText`) and MSW for HTTP mocks in `packages/api-client`. See the **Frontend testing** section in [`README.md`](README.md).
 
 To auto-fix lint and format issues:
 
