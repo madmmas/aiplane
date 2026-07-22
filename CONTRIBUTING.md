@@ -51,6 +51,22 @@ pnpm lint:fix
 
 For product intent, architecture decisions, and the full roadmap, see [`docs/SPEC.md`](docs/SPEC.md).
 
+Engineering decisions and trade-offs that are not user-facing live in
+[`docs/DEVLOG.md`](docs/DEVLOG.md) (process-facing journal). User-facing shipped
+changes belong in [`CHANGELOG.md`](CHANGELOG.md) — do not put "why we chose X" into
+the changelog or "what shipped in 0.1.0" into the DEVLOG.
+
+### When to write a DEVLOG entry
+
+Add a reverse-chronological entry to `docs/DEVLOG.md` in the **same PR** when you:
+
+- Make a non-trivial architecture decision (persistence style, auth model, federation boundary)
+- Accept an explicit trade-off or leave known drift (e.g. SPEC says one thing, code does another for now)
+- Hit a dead end worth warning the next person about
+
+Skip a DEVLOG entry for routine features, renames, dependency bumps, and docs typos —
+those are covered by the PR description and, when user-facing, the CHANGELOG.
+
 ## Pull requests
 
 1. Create a feature branch from `main` (direct commits to `main` are blocked locally by Husky and on GitHub by branch protection).

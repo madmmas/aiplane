@@ -23,7 +23,8 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#47](https://github.com/madmmas/aiplane/issues/47) | Frontend Vitest + RTL setup | `chore/frontend-testing-setup` | Hygiene | Done ([#68](https://github.com/madmmas/aiplane/pull/68)) |
 | [#48](https://github.com/madmmas/aiplane/issues/48) | Backend JUnit/Testcontainers/JaCoCo setup | `chore/backend-testing-setup` | Hygiene | Done ([#69](https://github.com/madmmas/aiplane/pull/69)) |
 | [#49](https://github.com/madmmas/aiplane/issues/49) | Wire test execution + coverage into CI | `chore/ci-test-execution` | Hygiene | Done ([#72](https://github.com/madmmas/aiplane/pull/72)) |
-| [#70](https://github.com/madmmas/aiplane/issues/70) | Add CODEOWNERS and CHANGELOG.md | `docs/codeowners-and-changelog` | Hygiene | Open |
+| [#70](https://github.com/madmmas/aiplane/issues/70) | Add CODEOWNERS and CHANGELOG.md | `docs/codeowners-and-changelog` | Hygiene | Done ([#73](https://github.com/madmmas/aiplane/pull/73)) |
+| [#71](https://github.com/madmmas/aiplane/issues/71) | Add DEVLOG for engineering decisions | `docs/add-devlog` | Hygiene | Open |
 | [#18](https://github.com/madmmas/aiplane/issues/18) | Phase 1 — Prompt Manager MVP | `feat/phase-1-prompt-manager-mvp` | Phase 1 | Open |
 | [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 | Open |
 | [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 | Open |
