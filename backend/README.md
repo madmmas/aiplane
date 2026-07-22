@@ -11,13 +11,13 @@ Spring Boot modular monolith for AIPlane (SPEC §3).
 
 ## Prerequisites
 
-- JDK 21+
+- **JDK 21** (recommended; JDK 25+ also works — Surefire sets `net.bytebuddy.experimental` for Mockito)
 - Maven 3.9+
-- PostgreSQL 16+ for running the API server locally (Docker Compose arrives in [#12](https://github.com/madmmas/aiplane/issues/12))
-- Docker (for Testcontainers during `make backend-test`)
+- PostgreSQL 16+ for running the API server locally (or use Docker Compose)
+- Docker (required for Testcontainers during `make backend-test` / `mvn verify`)
 
 ```bash
-export JAVA_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null || echo /opt/homebrew/opt/openjdk@21)
+export JAVA_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null || echo /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home)
 ```
 
 ## Database (Flyway)
@@ -50,6 +50,17 @@ From the repo root:
 make backend-build
 # or
 mvn -f backend/pom.xml -B verify
+```
+
+`verify` runs:
+
+1. **Surefire** unit tests (`*Tests`) — JUnit 5 + Mockito, no Docker required  
+2. **Failsafe** integration tests (`*IT`) — Testcontainers Postgres + real Flyway migrations (Docker required)  
+3. **JaCoCo** HTML/XML reports under each module's `target/site/jacoco/`
+
+```bash
+make backend-test   # same as verify (unit + IT + coverage)
+open backend/api-server/target/site/jacoco/index.html
 ```
 
 ## Run

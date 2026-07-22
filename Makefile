@@ -84,7 +84,7 @@ backend-build:
 	mvn -f backend/pom.xml -B verify
 
 backend-test:
-	mvn -f backend/pom.xml -B test
+	mvn -f backend/pom.xml -B verify
 
 backend-api:
 	mvn -f backend/api-server/pom.xml spring-boot:run

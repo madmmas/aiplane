@@ -76,6 +76,10 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <!-- Keep the plain jar as the main artifact so failsafe can load *IT classes. -->
+          <classifier>exec</classifier>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -94,8 +98,24 @@
           </environmentVariables>
           <systemPropertyVariables>
             <api.version>1.44</api.version>
+            <!-- Mockito/Byte Buddy: allow newer JDKs (e.g. 25) until Spring Boot bumps the BOM. -->
+            <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <api.version>1.44</api.version>
+            <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

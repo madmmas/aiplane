@@ -9,49 +9,43 @@ alwaysApply: false
 # Backend Testing Rules
 
 ## What's already established — follow this pattern
-- `AiManagerApplicationTests` (in `api-server`) is the reference: `@SpringBootTest` +
-  `@AutoConfigureMockMvc` + `@Testcontainers`, with a `@Container @ServiceConnection
-  PostgreSQLContainer<>("postgres:16-alpine")`. New integration tests should follow this
-  same shape rather than inventing a different bootstrapping style.
+- Integration tests extend `AbstractPostgresIntegrationTest` (`@Testcontainers` +
+  `@Container @ServiceConnection PostgreSQLContainer<>("postgres:16-alpine")`) and use
+  `@SpringBootTest`. Name them `*IT.java` so **failsafe** runs them during `mvn verify`.
+  Reference: `AiManagerApplicationIT`, `ProjectRepositoryIT`.
+- Unit tests (`*Tests.java`) use JUnit 5 + Mockito (`@ExtendWith(MockitoExtension.class)`)
+  with no Spring context and no Docker. Reference: `ProjectServiceTests`,
+  `SlugNormalizerTests`. Surefire excludes `*IT.java`.
 - `spring-boot-testcontainers`, `testcontainers-junit-jupiter`, `testcontainers-postgresql`,
-  and `spring-boot-starter-test` (which pulls in JUnit 5, Mockito, AssertJ) are already on
-  the `api-server` classpath — don't add them again or pull in a competing assertion
-  library.
+  and `spring-boot-starter-test` (JUnit 5, Mockito, AssertJ) are on the `api-server`
+  classpath — don't add them again or pull in a competing assertion library.
+- **JaCoCo** is wired in the parent POM (`prepare-agent` + `report` on `verify`). Reports
+  land in `backend/<module>/target/site/jacoco/`. Don't add a second coverage plugin.
 - For anything touching the database (migrations, seed data, repository behavior), test
   against a real Postgres via Testcontainers + real Flyway migrations — don't mock
   `JdbcTemplate` or a repository for schema-level assertions. Reserve mocking for pure
   unit tests of business logic that doesn't touch the DB.
 
-## What's still missing
-- Only one test class exists today, and it's a smoke test (context loads, health endpoint,
-  migration/seed assertions) — there is no business logic yet to test since the domain
-  packages (`prompt`, `guardrail`, `user`, `provider`, `usage`, `security`) are still empty
-  `package-info.java` stubs. As each domain gets real classes, it needs its own tests in
-  the same PR — don't let a feature land with zero coverage just because the existing
-  pattern is thin.
-- No coverage tool (JaCoCo or similar) is wired into the Maven build yet. Until it is,
-  call out what you tested and what you didn't in the PR description — reviewers can't
-  see a coverage delta automatically.
-- `maven-failsafe-plugin` is version-managed in the parent `pom.xml`'s `pluginManagement`
-  but isn't bound to a lifecycle phase in any module yet. If you add true integration
-  tests (`*IT.java` naming), you must explicitly bind `failsafe`'s `integration-test`/
-  `verify` goals in that module's `<build><plugins>` — Surefire will not pick up
-  `*IT.java` files by its own naming convention.
-
 ## Conventions
 - **Unit tests** (no Spring context, no container): JUnit 5 + Mockito, for service/business
   logic. Fast and isolated — this is what most new domain logic should get.
-- **Integration tests** (`@SpringBootTest` + Testcontainers): reserved for repository-level
-  or full-context behavior that genuinely needs a real database or a real app context.
-  Don't default to `@SpringBootTest` for something a plain unit test could cover — it's
-  slower and the existing single test already takes real container start-up time.
-- Name test classes `<ClassUnderTest>Tests` (matching `AiManagerApplicationTests`), and
-  name test methods in plain English describing the behavior
-  (`healthEndpointIsUp`, `flywayMigrationsCreateCoreTablesAndSeed`) — not `test1` or
-  `shouldReturnTrue`-style names.
+- **Integration tests** (`*IT` + `@SpringBootTest` + Testcontainers): reserved for
+  repository-level or full-context behavior that genuinely needs a real database or a real
+  app context. Don't default to `@SpringBootTest` for something a plain unit test could
+  cover — it's slower and container start-up time adds up.
+- Name test classes `<ClassUnderTest>Tests` or `<ClassUnderTest>IT`, and name test methods
+  in plain English describing the behavior (`healthEndpointIsUp`,
+  `flywayMigrationsCreateCoreTablesAndSeed`) — not `test1` or `shouldReturnTrue`-style
+  names.
 - If a test needs Testcontainers, don't re-add the Docker API version workaround per test —
-  it's already handled globally via the `DOCKER_API_VERSION=1.44` Surefire config in
-  `api-server/pom.xml` (see `.cursor/rules/spring-boot-backend.mdc`).
-- `mvn verify` is the required CI command — a new test only counts as "wired into CI" if
-  running `mvn verify` locally actually executes it. Confirm this before considering a
-  testing sub-issue done.
+  it's handled via `DOCKER_API_VERSION=1.44` on Surefire/Failsafe and the static block in
+  `AbstractPostgresIntegrationTest` (see `.cursor/rules/spring-boot-backend.mdc`).
+- `mvn verify` is the required CI command — it must execute both Surefire unit tests and
+  Failsafe ITs, then emit JaCoCo reports. Confirm locally before considering a testing
+  change done.
+
+## config-server
+- No database: `@SpringBootTest` + `@AutoConfigureMockMvc` smoke tests
+  (`ConfigServerApplicationTests`) are enough until Phase 5 wires Git/JDBC backends.
+- Don't pull Testcontainers into `config-server` unless a future feature actually needs
+  Postgres there.
