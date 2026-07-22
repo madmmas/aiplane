@@ -1,0 +1,4 @@
+# Placeholder native config served by Config Server during local scaffold.
+# Real prompt/guardrail payloads land with Phase 5 (#17).
+aiplane:
+  scaffold: true

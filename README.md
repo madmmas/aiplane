@@ -15,8 +15,9 @@ Static UI reference mockups live under [`mock/`](mock/) (including brand icons i
 - **Monorepo**: pnpm workspaces + [Turborepo](https://turbo.build/)
 - **Build**: [Vite](https://vitejs.dev/) + [@originjs/vite-plugin-federation](https://github.com/originjs/vite-plugin-federation)
 - **UI**: React 19, TypeScript
-- **Lint/Format**: [Biome](https://biomejs.dev/)
-- **CI**: GitHub Actions (`ci` — lint → typecheck → build)
+- **Backend**: Java 21, Spring Boot 3.4, Spring Cloud Config, Spring AI (BOM)
+- **Lint/Format**: [Biome](https://biomejs.dev/) (frontend)
+- **CI**: GitHub Actions (`ci` — frontend lint/typecheck/build + backend Maven verify)
 
 ## Apps
 
@@ -32,6 +33,7 @@ Static UI reference mockups live under [`mock/`](mock/) (including brand icons i
 
 - **Node.js** ≥ 18 (see [`.nvmrc`](.nvmrc) for recommended version)
 - **pnpm** 9.x (recommended; project uses `packageManager: "pnpm@9.14.2"`)
+- **JDK 21** + **Maven 3.9+** (for `backend/`)
 
 Install pnpm if needed:
 
@@ -128,6 +130,9 @@ aiplane/
 │   ├── ui/               # Shared design system (tokens + shadcn)
 │   ├── types/            # Shared TypeScript DTOs
 │   └── api-client/       # Fetch client + React Query hooks
+├── backend/
+│   ├── api-server/       # Spring Boot API (:8080)
+│   └── config-server/    # Spring Cloud Config (:8888)
 ├── docs/
 │   ├── SPEC.md           # Product spec and architecture
 │   └── ISSUE_WORKFLOW.md # Issue / branch / PR workflow
@@ -136,6 +141,15 @@ aiplane/
 ├── pnpm-workspace.yaml
 ├── turbo.json
 └── Makefile              # Common commands (make help)
+```
+
+## Backend (Java)
+
+See [`backend/README.md`](backend/README.md). Quick start:
+
+```bash
+make backend-build
+make backend-api   # http://localhost:8080/actuator/health
 ```
 
 ## Makefile
@@ -148,6 +162,7 @@ Common tasks are available via `make` (see `make help`):
 - `make preview` – preview production build  
 - `make lint` – run Biome lint/format check  
 - `make typecheck` – run TypeScript type checking  
+- `make backend-build` / `make backend-api` – Maven verify / run API server  
 - `make clean` – remove build artifacts and caches  
 
 Run `make help` for the full list.

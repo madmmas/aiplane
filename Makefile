@@ -1,7 +1,9 @@
 # AIPlane micro-frontend — common commands
 # Usage: make [target]; run 'make help' for list
 
-.PHONY: help install dev build preview lint typecheck clean dev-dashboard dev-prompt dev-guardrail dev-user dev-usages
+.PHONY: help install dev build preview lint typecheck clean \
+	dev-dashboard dev-prompt dev-guardrail dev-user dev-usages \
+	backend-build backend-api backend-config backend-test
 
 # Default target
 help:
@@ -20,6 +22,11 @@ help:
 	@echo "  make dev-guardrail   Run only guardrail (port 5175)"
 	@echo "  make dev-user        Run only user-manager (port 5176)"
 	@echo "  make dev-usages      Run only usages-data (port 5177)"
+	@echo ""
+	@echo "  make backend-build   Maven verify for backend modules"
+	@echo "  make backend-test    Maven tests for backend modules"
+	@echo "  make backend-api     Run api-server on :8080"
+	@echo "  make backend-config  Run config-server on :8888"
 	@echo ""
 
 install:
@@ -41,7 +48,7 @@ typecheck:
 	pnpm typecheck
 
 clean:
-	rm -rf apps/*/dist apps/*/.turbo .turbo
+	rm -rf apps/*/dist apps/*/.turbo .turbo backend/**/target
 
 # Single-app dev (for when you only need one app)
 dev-dashboard:
@@ -58,3 +65,16 @@ dev-user:
 
 dev-usages:
 	pnpm turbo dev --filter=@repo/usages-data
+
+# Backend (Java 21 + Maven)
+backend-build:
+	mvn -f backend/pom.xml -B verify
+
+backend-test:
+	mvn -f backend/pom.xml -B test
+
+backend-api:
+	mvn -f backend/api-server/pom.xml spring-boot:run
+
+backend-config:
+	mvn -f backend/config-server/pom.xml spring-boot:run

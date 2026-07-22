@@ -4,6 +4,7 @@ node_modules
 # Build
 dist
 .turbo
+backend/**/target/
 
 # Local env
 .env
