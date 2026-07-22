@@ -14,6 +14,8 @@ export type SharedVitestOptions = {
   setupFiles?: string[];
   /** Vitest environment; packages without DOM can use `node`. */
   environment?: "jsdom" | "node" | "happy-dom";
+  /** Extra coverage exclude globs (merged with defaults). */
+  coverageExclude?: string[];
 };
 
 /**
@@ -21,7 +23,7 @@ export type SharedVitestOptions = {
  * Keep federation plugins out of test configs — unit tests mock remote boundaries.
  */
 export function createVitestConfig(options: SharedVitestOptions): UserConfig {
-  const { root, alias, setupFiles, environment = "jsdom" } = options;
+  const { root, alias, setupFiles, environment = "jsdom", coverageExclude = [] } = options;
 
   return defineConfig({
     plugins: environment === "node" ? [] : [react()],
@@ -32,6 +34,20 @@ export function createVitestConfig(options: SharedVitestOptions): UserConfig {
       include: ["src/**/*.{test,spec}.{ts,tsx}"],
       css: false,
       restoreMocks: true,
+      coverage: {
+        provider: "v8",
+        reportsDirectory: path.join(root, "coverage"),
+        reporter: ["text", "html", "lcov"],
+        include: ["src/**/*.{ts,tsx}"],
+        exclude: [
+          "src/**/*.{test,spec}.{ts,tsx}",
+          "src/**/test/**",
+          "src/**/*.d.ts",
+          "src/main.tsx",
+          "src/vite-env.d.ts",
+          ...coverageExclude,
+        ],
+      },
     },
     resolve: {
       alias,

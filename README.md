@@ -17,7 +17,7 @@ Static UI reference mockups live under [`mock/`](mock/) (including brand icons i
 - **UI**: React 19, TypeScript
 - **Backend**: Java 21, Spring Boot 3.4, Spring Cloud Config, Spring AI (BOM)
 - **Lint/Format**: [Biome](https://biomejs.dev/) (frontend)
-- **CI**: GitHub Actions (`ci` — frontend lint/typecheck/build + backend Maven verify)
+- **CI**: GitHub Actions (`ci` — lint/typecheck/test/build; `backend` — Maven verify + JaCoCo)
 
 ## Apps
 
@@ -137,11 +137,11 @@ Example:
 
 ```bash
 pnpm test                              # all packages via Turbo
+pnpm test:coverage                     # same + V8 coverage reports under each package's coverage/
 pnpm turbo test --filter=@repo/ui      # one package
 ```
 
-Wire CI execution separately (see the CI test-execution issue); local `pnpm test` is the source of truth for the suite.
-## Running a single app
+CI runs `pnpm test:coverage` inside the required `ci` job (so a failing suite blocks merges) and uploads HTML/LCOV artifacts. Backend coverage comes from JaCoCo on `mvn verify` in the `backend` job.## Running a single app
 
 From repo root, use Turbo's filter:
 
