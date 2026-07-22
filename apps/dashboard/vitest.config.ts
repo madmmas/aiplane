@@ -9,4 +9,6 @@ export default createVitestConfig({
   alias: {
     "@": path.resolve(dirname, "./src"),
   },
+  // Federated `import("promptManager/App")` etc. break V8 coverage remapping.
+  coverageExclude: ["src/App.tsx"],
 });
