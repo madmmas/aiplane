@@ -121,9 +121,26 @@ Same ports as dev (e.g. dashboard at http://localhost:5173).
 pnpm lint        # Biome lint and format check
 pnpm lint:fix    # Auto-fix lint and format issues
 pnpm typecheck   # TypeScript type checking
+pnpm test        # Vitest unit/component tests (all apps + packages)
 pnpm build       # Production build
 ```
 
+### Frontend testing
+
+- **Runner:** [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/react) + `@testing-library/jest-dom`
+- **HTTP mocks:** Prefer [MSW](https://mswjs.io/) for `packages/api-client` network calls (see `packages/api-client/src/test/msw/`) instead of stubbing `fetch` by hand
+- **Layout:** Colocate tests next to source as `*.test.ts` / `*.test.tsx` (no parallel `__tests__/` tree)
+- **Config:** Shared base in `vitest.shared.ts` / `vitest.setup.ts`; each app/package has its own `vitest.config.ts`
+- **Watch mode:** `pnpm turbo test:watch --filter=@repo/<name>` or `pnpm test:watch` inside a package
+
+Example:
+
+```bash
+pnpm test                              # all packages via Turbo
+pnpm turbo test --filter=@repo/ui      # one package
+```
+
+Wire CI execution separately (see the CI test-execution issue); local `pnpm test` is the source of truth for the suite.
 ## Running a single app
 
 From repo root, use Turbo's filter:
@@ -196,6 +213,7 @@ Common tasks are available via `make` (see `make help`):
 - `make preview` – preview production build  
 - `make lint` – run Biome lint/format check  
 - `make typecheck` – run TypeScript type checking  
+- `make test` – run Vitest unit/component tests  
 - `make backend-build` / `make backend-api` – Maven verify / run API server  
 - `make docker-up` / `make docker-down` – full Docker Compose stack  
 - `make clean` – remove build artifacts and caches  

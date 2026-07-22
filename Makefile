@@ -1,7 +1,7 @@
 # AIPlane micro-frontend — common commands
 # Usage: make [target]; run 'make help' for list
 
-.PHONY: help install dev build preview lint typecheck clean \
+.PHONY: help install dev build preview lint typecheck test clean \
 	dev-dashboard dev-prompt dev-guardrail dev-user dev-usages \
 	backend-build backend-api backend-config backend-test \
 	docker-up docker-down docker-logs docker-ps docker-config
@@ -18,6 +18,7 @@ help:
 	@echo "  make preview      Preview production build (run after make build)"
 	@echo "  make lint         Run Biome lint and format check"
 	@echo "  make typecheck    Run TypeScript type checking"
+	@echo "  make test         Run Vitest unit/component tests"
 	@echo "  make clean        Remove dist/ and .turbo caches"
 	@echo ""
 	@echo "  make dev-dashboard    Run only dashboard (port 5173)"
@@ -55,6 +56,9 @@ lint:
 
 typecheck:
 	pnpm typecheck
+
+test:
+	pnpm test
 
 clean:
 	rm -rf apps/*/dist apps/*/.turbo .turbo backend/**/target

@@ -1,5 +1,5 @@
 ---
-description: Frontend unit/component testing conventions using Vitest and React Testing Library, once the testing infra sub-issue lands.
+description: Frontend unit/component testing conventions using Vitest and React Testing Library.
 globs:
   - apps/*/src/**
   - packages/*/src/**
