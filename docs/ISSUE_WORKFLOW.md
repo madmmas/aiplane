@@ -8,25 +8,25 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 
 ## Issue tracker overview
 
-| Issue | Title | Branch | Phase |
-|-------|-------|--------|-------|
-| [#7](https://github.com/madmmas/aiplane/issues/7) | OSS standard setup (license, CI, community docs) | `chore/oss-standard-setup` | Foundation |
-| [#4](https://github.com/madmmas/aiplane/issues/4) | Add product spec and UI mock reference materials | `docs/add-spec-and-mock` | Foundation |
-| [#5](https://github.com/madmmas/aiplane/issues/5) | Rebrand AI Manager → AIPlane | `chore/rebrand-aiplane` | Foundation |
-| [#6](https://github.com/madmmas/aiplane/issues/6) | Add AIPlane brand assets from mock/icons | `feat/dashboard-brand-assets` | Foundation |
-| [#8](https://github.com/madmmas/aiplane/issues/8) | Scaffold `packages/ui` design system | `feat/packages-ui-tokens` | Phase 0 |
-| [#9](https://github.com/madmmas/aiplane/issues/9) | Add shared types and API client packages | `feat/packages-types-api-client` | Phase 0 |
-| [#10](https://github.com/madmmas/aiplane/issues/10) | Dashboard host shell from UI mock | `feat/dashboard-host-shell` | Phase 0 |
-| [#13](https://github.com/madmmas/aiplane/issues/13) | Backend Spring Boot Maven scaffold | `feat/backend-scaffold` | Phase 0 |
-| [#11](https://github.com/madmmas/aiplane/issues/11) | Flyway migrations V1–V9 | `feat/flyway-migrations` | Phase 0 |
-| [#12](https://github.com/madmmas/aiplane/issues/12) | Docker Compose dev environment | `feat/docker-compose-dev` | Phase 0 |
-| [#18](https://github.com/madmmas/aiplane/issues/18) | Phase 1 — Prompt Manager MVP | `feat/phase-1-prompt-manager-mvp` | Phase 1 |
-| [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 |
-| [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 |
-| [#16](https://github.com/madmmas/aiplane/issues/16) | Phase 4 — User Management + API Keys | `feat/phase-4-user-manager` | Phase 4 |
-| [#17](https://github.com/madmmas/aiplane/issues/17) | Phase 5 — Config Server Integration | `feat/phase-5-config-server` | Phase 5 |
+| Issue | Title | Branch | Phase | Status |
+|-------|-------|--------|-------|--------|
+| [#7](https://github.com/madmmas/aiplane/issues/7) | OSS standard setup (license, CI, community docs) | `chore/oss-standard-setup` | Foundation | Done ([#3](https://github.com/madmmas/aiplane/pull/3)) |
+| [#4](https://github.com/madmmas/aiplane/issues/4) | Add product spec and UI mock reference materials | `docs/add-spec-and-mock` | Foundation | Done ([#30](https://github.com/madmmas/aiplane/pull/30)) |
+| [#5](https://github.com/madmmas/aiplane/issues/5) | Rebrand AI Manager → AIPlane | `chore/rebrand-aiplane` | Foundation | Done ([#32](https://github.com/madmmas/aiplane/pull/32)) |
+| [#6](https://github.com/madmmas/aiplane/issues/6) | Add AIPlane brand assets from mock/icons | `feat/dashboard-brand-assets` | Foundation | Done ([#34](https://github.com/madmmas/aiplane/pull/34)) |
+| [#8](https://github.com/madmmas/aiplane/issues/8) | Scaffold `packages/ui` design system | `feat/packages-ui-tokens` | Phase 0 | Open |
+| [#9](https://github.com/madmmas/aiplane/issues/9) | Add shared types and API client packages | `feat/packages-types-api-client` | Phase 0 | Open |
+| [#10](https://github.com/madmmas/aiplane/issues/10) | Dashboard host shell from UI mock | `feat/dashboard-host-shell` | Phase 0 | Open |
+| [#13](https://github.com/madmmas/aiplane/issues/13) | Backend Spring Boot Maven scaffold | `feat/backend-scaffold` | Phase 0 | Open |
+| [#11](https://github.com/madmmas/aiplane/issues/11) | Flyway migrations V1–V9 | `feat/flyway-migrations` | Phase 0 | Open |
+| [#12](https://github.com/madmmas/aiplane/issues/12) | Docker Compose dev environment | `feat/docker-compose-dev` | Phase 0 | Open |
+| [#18](https://github.com/madmmas/aiplane/issues/18) | Phase 1 — Prompt Manager MVP | `feat/phase-1-prompt-manager-mvp` | Phase 1 | Open |
+| [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 | Open |
+| [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 | Open |
+| [#16](https://github.com/madmmas/aiplane/issues/16) | Phase 4 — User Management + API Keys | `feat/phase-4-user-manager` | Phase 4 | Open |
+| [#17](https://github.com/madmmas/aiplane/issues/17) | Phase 5 — Config Server Integration | `feat/phase-5-config-server` | Phase 5 | Open |
 
-**Already in progress:** [#7](https://github.com/madmmas/aiplane/issues/7) → [PR #3](https://github.com/madmmas/aiplane/pull/3)
+**Foundation complete.** Next up: Phase 0 frontend ([#8](https://github.com/madmmas/aiplane/issues/8)) and/or backend ([#13](https://github.com/madmmas/aiplane/issues/13)).
 
 ---
 
@@ -176,11 +176,18 @@ EOF
 - Squash-merge into `main` (repo setting)
 - Delete the branch after merge
 
-### 7. Re-enable branch protection (after #7 merges)
+### 7. Branch protection on `main` (required for #7)
 
-Once CI exists on `main`:
+**Status:** enabled on `madmmas/aiplane`. `main` requires the GitHub Actions job named `ci`, enforces rules for administrators, and disallows force-pushes. Local Husky also rejects direct commits to `main`/`master`.
+
+To verify or re-apply:
 
 ```bash
+# Verify
+gh api repos/madmmas/aiplane/branches/main/protection \
+  --jq '{checks: .required_status_checks.checks, enforce_admins: .enforce_admins.enabled}'
+
+# Re-apply (maintainers only)
 gh api -X PUT repos/madmmas/aiplane/branches/main/protection --input - <<'EOF'
 {
   "required_status_checks": {
@@ -200,12 +207,16 @@ EOF
 
 ### #7 — OSS standard setup
 
-**Status:** [PR #3](https://github.com/madmmas/aiplane/pull/3) open on `chore/oss-standard-setup`
+**Status:** complete via [PR #3](https://github.com/madmmas/aiplane/pull/3) (license, community docs, Biome/Husky, CI, templates, Dependabot) plus branch protection + Husky main-branch guard.
 
-```bash
-git checkout chore/oss-standard-setup
-# review, ensure CI green, merge PR #3
-```
+Acceptance checklist:
+
+- [x] `LICENSE` (MIT), `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`
+- [x] Biome + Husky + lint-staged at repo root
+- [x] CI workflow: lint → typecheck → build (job id `ci`)
+- [x] Issue templates + PR template + Dependabot
+- [x] README badges and OSS sections
+- [x] Branch protection requires `ci` on `main`
 
 ---
 
@@ -402,7 +413,7 @@ aiplane/
 ## Tips
 
 - **One PR per issue** keeps reviews small and CI fast
-- **Merge #7 first** — everything else depends on lint/CI tooling
+- **Foundation is merged** — #7 (CI/lint), #4–#6 (spec, rebrand, brand assets) are done; start Phase 0 (#8 UI or #13 backend)
 - **Do not commit `mock/files 2/`** — duplicate copies; use `mock/icons/` only
 - **Keep dashboard UI work scoped** — shell (#10) is separate from Phase 1 prompt features (#18)
 - Link PRs to issues with `Closes #N` for automatic cleanup

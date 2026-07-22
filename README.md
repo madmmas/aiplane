@@ -14,8 +14,9 @@ Static UI reference mockups live under [`mock/`](mock/) (including brand icons i
 
 - **Monorepo**: pnpm workspaces + [Turborepo](https://turbo.build/)
 - **Build**: [Vite](https://vitejs.dev/) + [@originjs/vite-plugin-federation](https://github.com/originjs/vite-plugin-federation)
-- **UI**: React 18, TypeScript
+- **UI**: React 19, TypeScript
 - **Lint/Format**: [Biome](https://biomejs.dev/)
+- **CI**: GitHub Actions (`ci` — lint → typecheck → build)
 
 ## Apps
 
