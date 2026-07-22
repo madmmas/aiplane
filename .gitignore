@@ -26,3 +26,6 @@ pnpm-debug.log*
 
 # Nested reference repo (not part of this monorepo)
 admin-dashboard-ui/
+
+# Local one-off scripts (not part of the tracked toolchain)
+scripts/*.sh

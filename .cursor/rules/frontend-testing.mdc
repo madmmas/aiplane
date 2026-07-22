@@ -1,0 +1,54 @@
+---
+description: Frontend unit/component testing conventions using Vitest and React Testing Library, once the testing infra sub-issue lands.
+globs:
+  - apps/*/src/**
+  - packages/*/src/**
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+alwaysApply: false
+---
+
+# Frontend Testing Rules
+
+## Runner and libraries
+- **Vitest**, not Jest — this repo builds with Vite, and Vitest shares its config/transform
+  pipeline. Don't introduce Jest or `ts-jest`.
+- **React Testing Library** (`@testing-library/react` + `@testing-library/jest-dom`) for
+  component tests. Query by role/label/text (`getByRole`, `getByLabelText`) the way a user
+  or screen reader would — reach for `data-testid` only when no accessible query exists.
+- **MSW** (Mock Service Worker) to mock `packages/api-client` HTTP calls in tests, instead
+  of manually stubbing `fetch` or the React Query client. Keeps tests close to real network
+  behavior and avoids brittle mock wiring per test file.
+
+## File layout and naming
+- Colocate tests next to the source file: `Button.tsx` -> `Button.test.tsx`,
+  `usePrompts.ts` -> `usePrompts.test.ts`. Don't create a parallel `__tests__/` tree.
+- One `vitest.config.ts` per app (or a shared base extended per app) — don't rely on a
+  single root config to cover every app's path aliases and federation setup.
+- Wire the `test` script into `turbo.json` so `pnpm test` at the root runs every app/package
+  in Turbo's dependency order, the same way `build`/`typecheck` already do.
+
+## What to test
+- **`packages/ui`**: token/preset exports and shared component behavior (props, variants,
+  accessibility attributes) — this is the base layer every MFE depends on, regressions here
+  are the highest blast radius.
+- **`packages/api-client`**: hook behavior against mocked responses (loading/error/success
+  states), not the implementation details of the underlying fetch wrapper.
+- **Each app (`apps/*`)**: component and page-level behavior for that app's own domain
+  (prompt CRUD forms, guardrail rule builder, usage dashboard, etc.) — not Module Federation
+  wiring itself.
+- **Module Federation boundaries**: don't spin up other remotes in unit tests to test the
+  dashboard host's remote loader. Mock the federated import boundary (e.g. mock the dynamic
+  `import()` a remote entry resolves to) and test the Suspense/error-boundary behavior in
+  isolation — see `.cursor/rules/module-federation.mdc` for the loader contract.
+
+## Style
+- Prefer explicit assertions (`expect(screen.getByText("Active")).toBeInTheDocument()`) over
+  snapshot testing. Snapshots are acceptable for small, stable markup (e.g. an SVG icon
+  wrapper) but should not be the primary assertion style for interactive components.
+- Test user-visible behavior and outcomes, not internal state or implementation details —
+  if a refactor that doesn't change behavior breaks the test, the test is testing the wrong
+  thing.
+- Every new component/hook added under `packages/ui`, `packages/api-client`, or any
+  `apps/*/src/components/**` should ship with at least one test in the same PR — don't defer
+  tests to a follow-up.
