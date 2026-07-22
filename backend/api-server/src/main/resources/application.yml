@@ -4,6 +4,14 @@ server:
 spring:
   application:
     name: aiplane-api-server
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/aimanager}
+    username: ${DB_USERNAME:aimanager}
+    password: ${DB_PASSWORD:changeme}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/seed
+    baseline-on-migrate: true
 
 management:
   endpoints:
@@ -18,3 +26,4 @@ logging:
   level:
     root: INFO
     dev.madmmas.aimanager: DEBUG
+    org.flywaydb: INFO
