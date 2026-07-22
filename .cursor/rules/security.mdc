@@ -1,0 +1,66 @@
+---
+description: Security conventions across the AIPlane stack — secrets, auth, guardrails, dependencies, containers.
+globs:
+  - backend/**/*.java
+  - apps/*/src/**
+  - packages/*/src/**
+  - "**/*.env*"
+  - docker/**
+  - docker-compose*.yml
+  - .github/workflows/**
+alwaysApply: false
+---
+
+# Security Rules
+
+## Secrets and configuration
+- Never commit real values in `.env` — it's gitignored; `.env.example` documents shape only
+  (variable names, placeholder/dummy values). If you add a new secret-bearing env var,
+  update `.env.example` with a placeholder, not a real key.
+- Provider API keys (Anthropic, OpenAI, Azure OpenAI, Bedrock, Ollama) are configured and
+  used **server-side only**, through Spring AI on the backend. Never expose a provider key
+  to the frontend bundle or call a provider directly from `apps/*` — always go through the
+  API Server.
+- Config Server values (`config_properties`, prompt/guardrail exports) may be readable by
+  client apps (News Radar, Ackloop) by design (SPEC's developer-first principle) — that's
+  fine for prompt/guardrail content, but never let provider credentials or JWT signing keys
+  flow through that path.
+
+## Auth (Phase 4 — invite flow, JWT, API keys)
+- JWTs: short-lived access tokens + refresh token. Deliver via **httpOnly cookies**, not in
+  a JSON body read into `localStorage`/`sessionStorage` — tokens in browser storage are
+  readable by any injected script (XSS) and shouldn't be introduced even as a "temporary"
+  implementation.
+- API keys: store **hashed** (not reversible/plaintext) in `api_keys`; show the raw key to
+  the user exactly once at creation time. Enforce permission scopes on every protected
+  endpoint via `ApiKeyAuthenticationFilter` — don't gate only in the frontend.
+- Validate JWTs and API keys server-side on every request to a protected route; don't trust
+  a client-supplied role/claim without re-verifying against the token/key record.
+
+## Guardrails as a security surface
+- User-supplied regex in guardrail evaluators (Phase 2) is an injection/DoS surface —
+  reject or bound catastrophic-backtracking patterns (ReDoS) before persisting or
+  evaluating a rule. Cap pattern length and, where feasible, evaluate with a timeout.
+- Treat guardrail rule input (keyword lists, regex, max-length configs) the same as any
+  other untrusted user input: validate shape and bounds server-side even though the UI
+  also validates.
+
+## Backend / data
+- Spring Data JPA / JPQL only — no string-concatenated SQL. Flyway migrations should not
+  embed secrets or environment-specific values.
+- CORS: configure explicit allowed origins for the API Server and Config Server; don't
+  default to `*` even in dev configs that might get copy-pasted into prod.
+- Log request/response bodies carefully — never log JWTs, API keys, or provider credentials,
+  even at debug level.
+
+## Dependencies and containers
+- Dependabot runs weekly (grouped minor/patch) — don't disable it. Pair it with a
+  vulnerability-scanning CI step (`pnpm audit`, OWASP Dependency-Check for Maven) before
+  merging, especially ahead of Phase 4 auth work landing.
+- Docker images (`docker/ui.Dockerfile`, backend Dockerfiles): pin base image versions,
+  don't run the container process as root, keep `.dockerignore` current so secrets/`.env`
+  never end up in a build context or image layer.
+
+## Reporting
+- Security vulnerabilities go through `SECURITY.md` (GitHub Security Advisories) —
+  **never** file a public issue for a real vulnerability, even a draft/placeholder one.
