@@ -1,4 +1,6 @@
 import React, { Suspense, useState } from "react";
+import { DashboardLayout } from "./components/dashboard-layout";
+import { ThemeProvider } from "./hooks/use-theme";
 
 const PromptManagerApp = React.lazy(() => import("promptManager/App"));
 const GuardrailApp = React.lazy(() => import("guardrail/App"));
@@ -54,40 +56,34 @@ const TABS: { id: TabId; label: string }[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
 
+  const topbarNav = (
+    <nav style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }} aria-label="Apps">
+      {TABS.map(({ id, label }) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => setActiveTab(id)}
+          style={{
+            padding: "0.4rem 0.75rem",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            background: activeTab === id ? "#f0f0f0" : "transparent",
+            cursor: "pointer",
+            color: "inherit",
+            fontSize: "0.875rem",
+          }}
+        >
+          {label}
+        </button>
+      ))}
+    </nav>
+  );
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <header
-        style={{
-          padding: "1rem 1.5rem",
-          borderBottom: "1px solid #eee",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: "1.25rem" }}>AIPlane</h1>
-        <nav style={{ display: "flex", gap: "0.5rem" }}>
-          {TABS.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setActiveTab(id)}
-              style={{
-                padding: "0.5rem 0.75rem",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                background: activeTab === id ? "#f0f0f0" : "transparent",
-                cursor: "pointer",
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
-      </header>
-      <main style={{ flex: 1, padding: "1.5rem" }}>
+    <ThemeProvider>
+      <DashboardLayout topbarNav={topbarNav}>
         {activeTab === "dashboard" && (
-          <p>Welcome to the AIPlane dashboard. Use the tabs above to open each micro-frontend.</p>
+          <p>Welcome to the AIPlane dashboard. Use the tabs to open each micro-frontend.</p>
         )}
         {activeTab === "promptManager" && (
           <RemoteErrorBoundary fallback={<div>Failed to load Prompt Manager.</div>}>
@@ -109,7 +105,7 @@ export default function App() {
             <UsagesDataApp />
           </RemoteErrorBoundary>
         )}
-      </main>
-    </div>
+      </DashboardLayout>
+    </ThemeProvider>
   );
 }
