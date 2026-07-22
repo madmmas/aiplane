@@ -24,6 +24,7 @@
     <spring-boot.version>3.4.5</spring-boot.version>
     <spring-cloud.version>2024.0.1</spring-cloud.version>
     <spring-ai.version>1.0.0</spring-ai.version>
+    <jacoco.version>0.8.13</jacoco.version>
   </properties>
 
   <dependencyManagement>
@@ -72,11 +73,56 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.3</version>
+          <configuration>
+            <!-- Unit tests only; *IT.java runs via failsafe during verify. -->
+            <excludes>
+              <exclude>**/*IT.java</exclude>
+              <exclude>**/*IT.kt</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>3.5.3</version>
+          <configuration>
+            <!-- Docker Engine 25+/Desktop rejects docker-java's default API 1.24. -->
+            <environmentVariables>
+              <DOCKER_API_VERSION>1.44</DOCKER_API_VERSION>
+            </environmentVariables>
+            <systemPropertyVariables>
+              <api.version>1.44</api.version>
+              <net.bytebuddy.experimental>true</net.bytebuddy.experimental>
+            </systemPropertyVariables>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <executions>
+            <execution>
+              <id>prepare-agent</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>report</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>

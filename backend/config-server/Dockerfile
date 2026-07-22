@@ -16,7 +16,7 @@ WORKDIR /app
 
 RUN apk add --no-cache curl
 
-COPY --from=build /build/config-server/target/config-server-*.jar /app/app.jar
+COPY --from=build /build/config-server/target/config-server-*-exec.jar /app/app.jar
 
 EXPOSE 8888
 
