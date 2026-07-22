@@ -46,8 +46,8 @@ alwaysApply: true
   go through service interfaces.
 
 ## Repo hygiene
-- Once `CODEOWNERS` and `CHANGELOG.md` exist (see the OSS-hygiene issues), respect them:
-  add a CHANGELOG entry for user-facing changes in the same PR, and expect/request the
-  relevant code owner's review rather than routing around it.
+- `CODEOWNERS` and `CHANGELOG.md` are in place: add a CHANGELOG entry for user-facing
+  changes in the same PR (see `CONTRIBUTING.md`), and expect/request the relevant code
+  owner's review rather than routing around it.
 - Don't add ESLint, Prettier, Jest, or npm/yarn lockfiles — this repo has standardized on
   Biome, Vitest, and pnpm; introducing a second tool in the same role creates config drift.

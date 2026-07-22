@@ -14,6 +14,11 @@
 
 <!-- Link to the issue this PR addresses, e.g. Fixes #123 -->
 
+## Changelog
+
+<!-- For user-facing changes, add an `[Unreleased]` entry in CHANGELOG.md in this PR. -->
+- [ ] `CHANGELOG.md` updated (or N/A — chore / docs / internal-only)
+
 ## Test plan
 
 - [ ] `pnpm lint` passes
