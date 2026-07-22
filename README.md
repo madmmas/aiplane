@@ -124,6 +124,8 @@ aiplane/
 │   ├── prompt-manager/ # Remote (port 5174)
 │   ├── user-manager/   # Remote (port 5176)
 │   └── usages-data/    # Remote (port 5177)
+├── packages/
+│   └── ui/               # Shared design system (tokens + shadcn)
 ├── docs/
 │   ├── SPEC.md           # Product spec and architecture
 │   └── ISSUE_WORKFLOW.md # Issue / branch / PR workflow

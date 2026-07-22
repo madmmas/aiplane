@@ -1,0 +1,130 @@
+/*
+ * AIPlane design tokens (SPEC §6 / §12).
+ * Dark palette is the product default — apps should start with `class="dark"` on <html>
+ * (or let ThemeProvider apply it). Light mode lives on `:root` for the toggle.
+ *
+ * Load Inter + JetBrains Mono in each app (see package README) so font-* utilities resolve.
+ */
+
+:root {
+  /* Light mode */
+  --background: #f7f8fb;
+  --foreground: #1a1d27;
+
+  --card: #ffffff;
+  --card-foreground: #1a1d27;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1d27;
+
+  --primary: #6c8ef5;
+  --primary-foreground: #ffffff;
+
+  --secondary: #eef0f6;
+  --secondary-foreground: #1a1d27;
+
+  --muted: #eef0f6;
+  --muted-foreground: #5c6178;
+
+  --accent: #6c8ef5;
+  --accent-foreground: #ffffff;
+  --accent-hover: #8aa3f7;
+
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e4ec;
+  --input: #e2e4ec;
+  --ring: #6c8ef5;
+
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --code-bg: #f0f1f5;
+
+  --surface-base: #f7f8fb;
+  --surface-card: #ffffff;
+  --surface-raised: #eef0f6;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1d27;
+  --sidebar-primary: #6c8ef5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef0f6;
+  --sidebar-accent-foreground: #1a1d27;
+  --sidebar-border: #e2e4ec;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Dark mode — SPEC §12 palette */
+  --background: #0f1117;
+  --foreground: #e8eaf0;
+
+  --card: #1a1d27;
+  --card-foreground: #e8eaf0;
+
+  --popover: #1a1d27;
+  --popover-foreground: #e8eaf0;
+
+  --primary: #6c8ef5;
+  --primary-foreground: #0f1117;
+
+  --secondary: #22263a;
+  --secondary-foreground: #e8eaf0;
+
+  --muted: #22263a;
+  --muted-foreground: #8b90a8;
+
+  --accent: #6c8ef5;
+  --accent-foreground: #0f1117;
+  --accent-hover: #8aa3f7;
+
+  --destructive: #f87171;
+  --destructive-foreground: #0f1117;
+
+  --border: #2e3248;
+  --input: #2e3248;
+  --ring: #6c8ef5;
+
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --code-bg: #12151f;
+
+  --surface-base: #0f1117;
+  --surface-card: #1a1d27;
+  --surface-raised: #22263a;
+
+  --sidebar: #0f1117;
+  --sidebar-foreground: #e8eaf0;
+  --sidebar-primary: #6c8ef5;
+  --sidebar-primary-foreground: #0f1117;
+  --sidebar-accent: #1a1d27;
+  --sidebar-accent-foreground: #e8eaf0;
+  --sidebar-border: #2e3248;
+}
+
+*,
+*::before,
+*::after {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code,
+kbd,
+pre,
+.font-mono {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
