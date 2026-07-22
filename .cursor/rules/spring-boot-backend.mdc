@@ -1,0 +1,90 @@
+---
+description: Spring Boot, Java, and Maven conventions for the api-server and config-server backend modules.
+globs:
+  - backend/**/*.java
+  - backend/**/pom.xml
+  - backend/**/*.yml
+  - backend/**/db/migration/**
+  - backend/**/db/seed/**
+alwaysApply: false
+---
+
+# Backend — Spring Boot / Java / Maven Conventions
+
+## Modules
+- Maven multi-module under `backend/`: parent `pom.xml` (`aiplane-backend`, groupId
+  `dev.madmmas.aiplane`) manages the Spring Boot 3.4.x / Spring Cloud 2024.0.x / Spring AI
+  1.0.0 BOMs via `dependencyManagement`. Two modules today: `api-server` (port 8080, the
+  modular monolith) and `config-server` (port 8888, Spring Cloud Config Server).
+- New backend capability belongs in `api-server` unless it's genuinely a separate
+  deployable service — don't add a third Maven module without checking it against
+  `docs/SPEC.md` §3 first.
+- Shared plugin versions (compiler, surefire, failsafe, spring-boot-maven-plugin) live in
+  the parent's `pluginManagement` — set versions there, not per-module.
+
+## Package structure (modular monolith)
+- Domain packages under `dev.madmmas.aimanager.*`: `prompt`, `guardrail`, `user`,
+  `provider`, `usage`, `security`, `project`. Each currently exists only as an empty
+  `package-info.java` — when adding real classes, keep each domain self-contained
+  (controller/service/repository/dto together) and don't reach into another domain's
+  package directly; go through its service interface instead.
+- `common/` is cross-cutting only: `common.config`, `common.dto`, `common.exception`,
+  `common.util`. Don't put domain-specific DTOs in `common.dto` — only genuinely shared
+  shapes (e.g. a generic error response envelope) belong there.
+- **Known quirk — don't "fix" it in passing:** the Java package root is still
+  `dev.madmmas.aimanager` (the pre-rebrand product name), while the Maven `groupId` is
+  already `dev.madmmas.aiplane` and everything else in the repo says "AIPlane". A full
+  package rename touches every source file, the logging config in `application.yml`, and
+  both Dockerfiles — it needs its own dedicated issue/PR, not a drive-by rename inside an
+  unrelated feature change.
+
+## Persistence — JdbcTemplate today, not JPA yet
+- `api-server/pom.xml` currently depends on `spring-boot-starter-jdbc`, **not**
+  `spring-boot-starter-data-jpa` — the existing test uses raw `JdbcTemplate` directly.
+  This is inconsistent with `docs/SPEC.md`'s stated intent ("Spring Data JPA for clean
+  repository-pattern persistence").
+- Resolve this explicitly before Phase 1 backend work (Prompt CRUD) goes further: either
+  add `spring-boot-starter-data-jpa` and write real `@Entity`/`@Repository` classes as
+  SPEC describes, or update SPEC to reflect a deliberate JdbcTemplate-based approach.
+  Don't let code and SPEC drift further apart — pick one and note the decision in the
+  Phase 1 CRUD PR.
+
+## Flyway migrations
+- Versioned migrations live in `backend/api-server/src/main/resources/db/migration/`,
+  named `V<N>__<snake_case_description>.sql` (V1-V9 already cover projects, prompts,
+  prompt_versions, guardrails, guardrail_sets, users, api_keys, usage_events,
+  config_properties). Never edit an already-applied `V<N>` file — add a new `V<N+1>`.
+- Local dev seed data is a **repeatable** migration (`R__01_seed_local_dev.sql`) under
+  `db/seed/`, kept separate from versioned migrations on purpose — never move seed data
+  into a `V*` file, or it'll be treated as required schema and applied everywhere.
+- `application.yml` sets `baseline-on-migrate: true` and
+  `locations: classpath:db/migration,classpath:db/seed` — don't introduce a third
+  migration location without updating that config to match.
+
+## Spring AI / Config Server
+- Provider integration (Anthropic, OpenAI, etc.) goes through Spring AI's `ChatClient`
+  abstraction inside the `provider` package — don't call a provider's HTTP API directly
+  from a domain service; that defeats the provider-agnostic principle in SPEC §1.
+- Config Server runs in `native` profile today, serving `classpath:/config`
+  (`backend/config-server/src/main/resources/config/application.yml`, explicitly marked
+  as a Phase 5 placeholder). Don't wire real prompt/guardrail payloads into that file —
+  that's the JDBC backend + `PromptConfigExporter` work, which is scoped Phase 5.
+
+## Lombok
+- Lombok is on the classpath (`optional` dependency) — prefer it for boilerplate
+  (`@Getter`, `@Builder`, `@RequiredArgsConstructor` for constructor injection) over
+  hand-written getters/setters and field injection.
+- Avoid `@Data` on any future JPA entity — it generates `equals`/`hashCode` over every
+  field, which breaks predictably once lazy-loaded associations are involved.
+
+## Style
+- No Java-specific formatter (Checkstyle/Spotless/google-java-format) is configured —
+  `.editorconfig`'s generic `[*]` rule (2-space indent, LF, UTF-8) is the only enforced
+  convention, and the existing Java code already follows it. Match that until a real
+  Java formatter is added.
+
+## Local dev / Docker gotcha
+- `api-server/pom.xml`'s `maven-surefire-plugin` config pins `DOCKER_API_VERSION=1.44`
+  because docker-java's default (API 1.24) gets rejected by Docker Engine 25+/Docker
+  Desktop. If a Testcontainers-based test fails locally with a Docker API version
+  mismatch, check this setting before assuming your local Docker install is broken.
