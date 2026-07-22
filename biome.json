@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["dist", "node_modules", ".turbo", "mock", "admin-dashboard-ui", ".vscode"]
+    "ignore": ["dist", "node_modules", ".turbo", "mock", "admin-dashboard-ui", ".vscode", "backend"]
   },
   "formatter": {
     "enabled": true,
