@@ -50,6 +50,34 @@ pnpm install
 
 ## Running the project
 
+### Running with Docker
+
+Full stack (Postgres, config-server, api-server, nginx UI) per SPEC §8:
+
+```bash
+cp .env.example .env   # first time only — edit secrets as needed
+make docker-up         # builds images and starts services
+```
+
+Then open:
+
+- **UI**: http://localhost:5173  
+- **API health**: http://localhost:8080/actuator/health  
+- **Config health**: http://localhost:8888/actuator/health  
+- **Postgres**: `localhost:5433` by default (`POSTGRES_PORT` in `.env`; user/db `aimanager`)
+
+Useful commands:
+
+```bash
+make docker-ps       # service status
+make docker-logs     # follow logs
+make docker-down     # stop and remove containers
+make docker-config   # validate compose files
+```
+
+Compose files: `docker-compose.yml` (base stack) + `docker-compose.dev.yml` (local ports / seed defaults).  
+`CONFIG_MODE` defaults to `native` so the config server works today; JDBC/Git backends land in Phase 5 ([#17](https://github.com/madmmas/aiplane/issues/17)).
+
 ### Development (all apps)
 
 Starts every app in dev mode. The dashboard (host) and remotes must all be running for federation to work.
@@ -133,6 +161,12 @@ aiplane/
 ├── backend/
 │   ├── api-server/       # Spring Boot API (:8080)
 │   └── config-server/    # Spring Cloud Config (:8888)
+├── docker/
+│   ├── nginx.conf        # UI reverse paths for federated remotes
+│   └── ui.Dockerfile     # pnpm build + nginx image
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── .env.example
 ├── docs/
 │   ├── SPEC.md           # Product spec and architecture
 │   └── ISSUE_WORKFLOW.md # Issue / branch / PR workflow
@@ -163,6 +197,7 @@ Common tasks are available via `make` (see `make help`):
 - `make lint` – run Biome lint/format check  
 - `make typecheck` – run TypeScript type checking  
 - `make backend-build` / `make backend-api` – Maven verify / run API server  
+- `make docker-up` / `make docker-down` – full Docker Compose stack  
 - `make clean` – remove build artifacts and caches  
 
 Run `make help` for the full list.
