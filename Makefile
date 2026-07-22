@@ -3,7 +3,10 @@
 
 .PHONY: help install dev build preview lint typecheck clean \
 	dev-dashboard dev-prompt dev-guardrail dev-user dev-usages \
-	backend-build backend-api backend-config backend-test
+	backend-build backend-api backend-config backend-test \
+	docker-up docker-down docker-logs docker-ps docker-config
+
+COMPOSE = docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env
 
 # Default target
 help:
@@ -27,6 +30,12 @@ help:
 	@echo "  make backend-test    Maven tests for backend modules"
 	@echo "  make backend-api     Run api-server on :8080"
 	@echo "  make backend-config  Run config-server on :8888"
+	@echo ""
+	@echo "  make docker-up       Start full stack (compose + .env)"
+	@echo "  make docker-down     Stop stack and remove containers"
+	@echo "  make docker-logs     Tail compose logs"
+	@echo "  make docker-ps       Show compose service status"
+	@echo "  make docker-config   Validate compose files"
 	@echo ""
 
 install:
@@ -78,3 +87,25 @@ backend-api:
 
 backend-config:
 	mvn -f backend/config-server/pom.xml spring-boot:run
+
+# Docker Compose full stack (SPEC §8)
+docker-up:
+	@test -f .env || cp .env.example .env
+	$(COMPOSE) up --build -d
+
+docker-down:
+	@test -f .env || cp .env.example .env
+	$(COMPOSE) down
+
+docker-logs:
+	@test -f .env || cp .env.example .env
+	$(COMPOSE) logs -f --tail=200
+
+docker-ps:
+	@test -f .env || cp .env.example .env
+	$(COMPOSE) ps
+
+docker-config:
+	@test -f .env || cp .env.example .env
+	$(COMPOSE) config >/dev/null
+	@echo "docker compose config OK"

@@ -1,0 +1,28 @@
+# Dev overrides — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# Exposes Postgres for host-side tooling (psql, IDE) and keeps Flyway seed enabled.
+
+services:
+  postgres:
+    ports:
+      # Default 5433 avoids clashing with a local Postgres on 5432
+      - "${POSTGRES_PORT:-5433}:5432"
+
+  api-server:
+    environment:
+      # Keep local seed for demo login (admin@aiplane.local / changeme)
+      SPRING_FLYWAY_LOCATIONS: classpath:db/migration,classpath:db/seed
+      LOGGING_LEVEL_DEV_MADMMAS_AIMANAGER: DEBUG
+
+  config-server:
+    environment:
+      # Prefer native classpath config until JDBC backend is wired (#17)
+      SPRING_PROFILES_ACTIVE: native
+      CONFIG_MODE: native
+
+  ui:
+    # Browser talks to published host ports
+    environment:
+      VITE_API_URL: http://localhost:8080
+      VITE_APP_ENV: development

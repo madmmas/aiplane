@@ -38,6 +38,10 @@ Default datasource (override with env):
 
 Production: set `spring.flyway.locations=classpath:db/migration` to skip seed scripts.
 
+## Docker
+
+From the repo root (`make docker-up`) the API server runs against Compose Postgres using `DATABASE_URL=jdbc:postgresql://postgres:5432/aimanager`. See the root README **Running with Docker** section.
+
 ## Build
 
 From the repo root:

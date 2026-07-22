@@ -1,0 +1,19 @@
+# Root context used by docker/ui.Dockerfile
+node_modules
+**/node_modules
+.pnpm-store
+.turbo
+**/.turbo
+**/dist
+.git
+.github
+admin-dashboard-ui
+mock
+backend
+**/target
+.env
+.env*.local
+.vscode
+.idea
+.DS_Store
+*.log

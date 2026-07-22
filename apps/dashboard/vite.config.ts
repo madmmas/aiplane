@@ -12,10 +12,12 @@ export default defineConfig({
     federation({
       name: "dashboard",
       remotes: {
-        promptManager: "http://localhost:5174/remoteEntry.js",
-        guardrail: "http://localhost:5175/remoteEntry.js",
-        userManager: "http://localhost:5176/remoteEntry.js",
-        usagesData: "http://localhost:5177/remoteEntry.js",
+        // Override via VITE_REMOTE_* for Docker/nginx same-origin serving.
+        promptManager:
+          process.env.VITE_REMOTE_PROMPT_MANAGER ?? "http://localhost:5174/remoteEntry.js",
+        guardrail: process.env.VITE_REMOTE_GUARDRAIL ?? "http://localhost:5175/remoteEntry.js",
+        userManager: process.env.VITE_REMOTE_USER_MANAGER ?? "http://localhost:5176/remoteEntry.js",
+        usagesData: process.env.VITE_REMOTE_USAGES_DATA ?? "http://localhost:5177/remoteEntry.js",
       },
       shared: {
         react: { singleton: true, requiredVersion: "^18.3.1" },

@@ -1,0 +1,7 @@
+*
+!pom.xml
+!api-server/
+!config-server/
+**/target/
+**/.git/
+**/.DS_Store
