@@ -125,7 +125,9 @@ aiplane/
 │   ├── user-manager/   # Remote (port 5176)
 │   └── usages-data/    # Remote (port 5177)
 ├── packages/
-│   └── ui/               # Shared design system (tokens + shadcn)
+│   ├── ui/               # Shared design system (tokens + shadcn)
+│   ├── types/            # Shared TypeScript DTOs
+│   └── api-client/       # Fetch client + React Query hooks
 ├── docs/
 │   ├── SPEC.md           # Product spec and architecture
 │   └── ISSUE_WORKFLOW.md # Issue / branch / PR workflow
