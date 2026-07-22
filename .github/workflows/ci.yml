@@ -10,6 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Required branch-protection check (name must stay `ci`).
+  # lint → typecheck → test → build; a failing Vitest suite blocks merges.
   ci:
     runs-on: ubuntu-latest
     steps:
@@ -34,9 +36,25 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Test
+        run: pnpm test:coverage
+
+      - name: Upload frontend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: |
+            apps/*/coverage/**
+            packages/*/coverage/**
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Build
         run: pnpm build
 
+  # Runs Surefire unit tests + Failsafe Testcontainers ITs + JaCoCo via `mvn verify`.
+  # Docker is available on ubuntu-latest for Testcontainers Postgres.
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -50,5 +68,15 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Backend verify
+      - name: Backend verify (unit + Testcontainers IT + JaCoCo)
         run: mvn -f backend/pom.xml -B verify
+
+      - name: Upload backend JaCoCo coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jacoco-coverage
+          path: |
+            backend/*/target/site/jacoco/**
+          if-no-files-found: warn
+          retention-days: 14

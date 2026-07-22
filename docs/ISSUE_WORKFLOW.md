@@ -21,7 +21,8 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#11](https://github.com/madmmas/aiplane/issues/11) | Flyway migrations V1–V9 | `feat/flyway-migrations` | Phase 0 | Open |
 | [#12](https://github.com/madmmas/aiplane/issues/12) | Docker Compose dev environment | `feat/docker-compose-dev` | Phase 0 | Done ([#45](https://github.com/madmmas/aiplane/pull/45)) |
 | [#47](https://github.com/madmmas/aiplane/issues/47) | Frontend Vitest + RTL setup | `chore/frontend-testing-setup` | Hygiene | Done ([#68](https://github.com/madmmas/aiplane/pull/68)) |
-| [#48](https://github.com/madmmas/aiplane/issues/48) | Backend JUnit/Testcontainers/JaCoCo setup | `chore/backend-testing-setup` | Hygiene | Open |
+| [#48](https://github.com/madmmas/aiplane/issues/48) | Backend JUnit/Testcontainers/JaCoCo setup | `chore/backend-testing-setup` | Hygiene | Done ([#69](https://github.com/madmmas/aiplane/pull/69)) |
+| [#49](https://github.com/madmmas/aiplane/issues/49) | Wire test execution + coverage into CI | `chore/ci-test-execution` | Hygiene | Open |
 | [#18](https://github.com/madmmas/aiplane/issues/18) | Phase 1 — Prompt Manager MVP | `feat/phase-1-prompt-manager-mvp` | Phase 1 | Open |
 | [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 | Open |
 | [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 | Open |
@@ -180,7 +181,11 @@ EOF
 
 ### 7. Branch protection on `main` (required for #7)
 
-**Status:** enabled on `madmmas/aiplane`. `main` requires the GitHub Actions job named `ci`, enforces rules for administrators, and disallows force-pushes. Local Husky also rejects direct commits to `main`/`master`.
+**Status:** enabled on `madmmas/aiplane`. `main` requires the GitHub Actions job named `ci`
+(lint → typecheck → test → build), enforces rules for administrators, and disallows
+force-pushes. Local Husky also rejects direct commits to `main`/`master`. The separate
+`backend` job runs `mvn verify` (Surefire + Failsafe Testcontainers + JaCoCo) and uploads
+coverage artifacts; keep it green even when it is not a required check.
 
 To verify or re-apply:
 

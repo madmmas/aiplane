@@ -56,7 +56,7 @@ For product intent, architecture decisions, and the full roadmap, see [`docs/SPE
 1. Create a feature branch from `main` (direct commits to `main` are blocked locally by Husky and on GitHub by branch protection).
 2. Make your changes with clear, focused commits. Link the issue (`Closes #N` in the PR body).
 3. Fill out the pull request template completely.
-4. Ensure the required `ci` check passes (lint → typecheck → build). Merges to `main` require a green `ci` status.
+4. Ensure the required `ci` check passes (lint → typecheck → test → build). Merges to `main` require a green `ci` status. The `backend` job also runs `mvn verify` (unit + Testcontainers + JaCoCo); keep it green even when it is not a required check.
 
 ## Code of conduct
 
