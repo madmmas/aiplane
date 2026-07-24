@@ -81,4 +81,9 @@ make backend-config
 
 ## Package layout (`api-server`)
 
-Domain packages match SPEC §3.3 (`prompt`, `guardrail`, `user`, `usage`, `provider`, `project`, `security`, `common`). They are placeholders until Phase 1+ feature issues land. Docker Compose lands in [#12](https://github.com/madmmas/aiplane/issues/12).
+Domain packages match SPEC §3.3 (`prompt`, `guardrail`, `user`, `usage`, `provider`, `project`, `security`, `common`).
+
+**`guardrail/` (Phase 2):** core evaluators (`KeywordBlocklistEvaluator`, `RegexFilterEvaluator`,
+`MaxLengthEvaluator`) plus `GuardrailCallAdvisor` (Spring AI `CallAdvisor`). Persistence and
+REST for guardrail sets land in #55. `api-server` depends on `spring-ai-client-chat` for the
+advisor API (no LLM provider starter yet).

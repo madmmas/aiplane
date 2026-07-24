@@ -28,6 +28,29 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Guardrail evaluators as Spring AI CallAdvisor (before CRUD)
+
+Phase 2 starts with pure evaluators (#54) before persistence/CRUD (#55) and UI (#56). I
+wanted the rule engine usable from a playground-style `ChatClient` call without waiting on
+guardrail set tables or REST.
+
+**Choice:** implement `GuardrailEvaluator` strategies + `GuardrailCallAdvisor` implementing
+Spring AI 1.0 `CallAdvisor`, and add only `spring-ai-client-chat` to `api-server` (advisor
+API, no provider starter). Rules are an in-memory `GuardrailRule` list for now; #55 will
+load ordered sets from Flyway V5 and construct the advisor per evaluate request.
+
+**ReDoS:** user regex is an injection/DoS surface (security rule). `RegexPatternGuard` caps
+pattern length (256), rejects nested/overlapping quantifier shapes, and
+`RegexFilterEvaluator` matches with a 100ms wall-clock timeout on a daemon thread. Not a
+formal safety proof — enough to refuse the obvious catastrophic patterns and bound match
+time.
+
+**Rejected:** shipping only a keyword list via Spring AI's built-in `SafeGuardAdvisor`. It
+covers one of three MVP types and has no max-length / regex / stage / action model. Better
+to own the advisor and keep SafeGuard as inspiration for failure-response shape.
+
+---
+
 ## 2026-07-22 — JdbcTemplate first, JPA later (and living with the SPEC drift)
 
 I scaffolded `api-server` with `spring-boot-starter-jdbc` and wrote the first

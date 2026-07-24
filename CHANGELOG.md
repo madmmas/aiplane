@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet — entries land here until the next tagged release.
+- Guardrail core evaluators: keyword blocklist, regex filter (ReDoS-bounded), and max-length, plus a Spring AI `CallAdvisor` that runs them against prompt/response text (#54)
 
 ## [0.1.0] - 2026-07-22
 

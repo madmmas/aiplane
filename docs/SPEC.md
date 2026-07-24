@@ -998,9 +998,9 @@ AZURE_OPENAI_KEY=
 - [ ] Config Server export on version promotion
 
 ### Phase 2 — Guardrail MVP
-- [ ] Keyword blocklist + regex filter + max-length evaluators
-- [ ] Guardrail sets with ordering
-- [ ] Test panel UI
+- [x] Keyword blocklist + regex filter + max-length evaluators (#54)
+- [ ] Guardrail sets with ordering (#55)
+- [ ] Test panel UI (#56)
 
 ### Phase 3 — Usage Telemetry
 - [ ] Usage event ingest (write endpoint for client apps)
