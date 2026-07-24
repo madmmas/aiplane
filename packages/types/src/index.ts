@@ -16,6 +16,7 @@ export type { Project } from "./project";
 
 export type {
   ModelParameters,
+  PlaygroundRunResponse,
   Prompt,
   PromptVersion,
   VersionMetrics,

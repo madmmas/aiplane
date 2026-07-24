@@ -44,3 +44,14 @@ export interface PromptVersion {
   createdAt: IsoDateTime;
   metrics?: VersionMetrics;
 }
+
+/** Response from `POST /api/v1/prompts/{id}/playground/run`. */
+export interface PlaygroundRunResponse {
+  content: string;
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  latencyMs: number;
+  provider: string;
+  model: string;
+  blockedByGuardrail?: boolean | null;
+}
