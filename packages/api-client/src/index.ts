@@ -29,6 +29,9 @@ export {
 export {
   MOCK_USAGE_EVENTS,
   ingestMockUsageEvents,
+  getMockUsageSummary,
+  listMockUsageEvents,
+  getMockUsageCostProjection,
   resetUsageMocks,
 } from "./mocks";
 
@@ -73,6 +76,12 @@ export {
 } from "./hooks/use-guardrail-sets";
 export {
   useIngestUsageEvents,
+  useUsageSummary,
+  useUsageEvents,
+  useUsageCostProjection,
   usageKeys,
   type UsageEventIngestInput,
+  type UseUsageSummaryParams,
+  type UseUsageEventsParams,
+  type UseUsageCostProjectionParams,
 } from "./hooks/use-usage";

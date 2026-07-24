@@ -28,6 +28,25 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Cost rates compute-on-ingest + summary APIs (#58)
+
+Chose **compute-on-ingest** over a scheduled aggregation job: simpler MVP, cost is
+queryable immediately, and clients can still override by sending `costUsd`
+explicitly. When `costUsd` is null/absent, `UsageService` calls `CostRateRegistry`
+(`(inputTokens/1000)*inputUsdPer1k + (outputTokens/1000)*outputUsdPer1k`, scale 8
+to match `NUMERIC(16,8)`).
+
+Rates live under `aiplane.cost-rates.rates` in `application.yml` (not Java switch
+statements) — a few Anthropic/OpenAI defaults matching mock models. Unknown models
+→ cost `0`; first sighting WARN, subsequent DEBUG.
+
+Read APIs: `GET /usage/summary?period=` (`7d` / `30d` / `yyyy-MM`),
+`GET /usage/events?from=&to=` (limit 500), and `GET /usage/costs/projection` —
+formula is `(sum cost over last 7d) / 7 * 30`. Dashboard UI stays in #59; this PR
+only adds api-client hooks/mocks.
+
+---
+
 ## 2026-07-24 — Usage event ingest envelope + auth stub (#57)
 
 `POST /api/v1/usage/events` accepts a forward-compatible envelope

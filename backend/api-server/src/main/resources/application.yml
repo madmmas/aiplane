@@ -30,6 +30,22 @@ spring:
 aiplane:
   playground:
     timeout: 30s
+  # USD per 1K tokens — override / extend per environment without code changes.
+  cost-rates:
+    rates:
+      - model: claude-sonnet-4-20250514
+        input-usd-per-1k: 0.003
+        output-usd-per-1k: 0.015
+      - model: claude-haiku-4-20250414
+        input-usd-per-1k: 0.0008
+        output-usd-per-1k: 0.004
+      - model: gpt-4o
+        input-usd-per-1k: 0.0025
+        output-usd-per-1k: 0.01
+      - model: gpt-4o-mini
+        input-usd-per-1k: 0.00015
+        output-usd-per-1k: 0.0006
+
 
 management:
   endpoints:

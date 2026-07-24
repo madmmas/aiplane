@@ -5,8 +5,9 @@ import java.time.Instant;
 
 /**
  * Single usage event within an ingest batch. Required wire fields: {@code projectId}, {@code
- * provider}, {@code model}, {@code status}. Numerics default to 0 / {@code costUsd} 0 when
- * omitted; {@code timestamp} defaults to now; {@code id} is server-generated when absent.
+ * provider}, {@code model}, {@code status}. Numerics default to 0 when omitted; {@code costUsd}
+ * omitted → computed from {@code CostRateRegistry}; an explicit value is kept as an override.
+ * {@code timestamp} defaults to now; {@code id} is server-generated when absent.
  */
 public record UsageEventCreateRequest(
     String id,
