@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-/** JDBC access for the {@code projects} table (JdbcTemplate until JPA lands in Phase 1). */
+/** JDBC access for the {@code projects} table (JdbcTemplate; prompts use JPA). */
 @Repository
 public class JdbcProjectRepository implements ProjectRepository {
 
@@ -30,6 +30,14 @@ public class JdbcProjectRepository implements ProjectRepository {
     Long matches =
         jdbcTemplate.queryForObject(
             "SELECT COUNT(*) FROM projects WHERE slug = ?", Long.class, slug);
+    return matches != null && matches > 0;
+  }
+
+  @Override
+  public boolean existsById(String id) {
+    Long matches =
+        jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM projects WHERE id = ?", Long.class, id);
     return matches != null && matches > 0;
   }
 }

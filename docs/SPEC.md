@@ -461,6 +461,7 @@ GET    /api/v1/projects/:id
 GET    /api/v1/prompts?projectId=
 POST   /api/v1/prompts
 GET    /api/v1/prompts/:id
+PATCH  /api/v1/prompts/:id                     { name?, description?, tags? }
 DELETE /api/v1/prompts/:id
 GET    /api/v1/prompts/:id/versions
 POST   /api/v1/prompts/:id/versions
@@ -991,7 +992,7 @@ AZURE_OPENAI_KEY=
 - [ ] Dashboard shell: sidebar, project switcher, auth flow
 
 ### Phase 1 — Prompt Manager MVP
-- [ ] Prompt CRUD (Spring Data JPA)
+- [x] Prompt CRUD (Spring Data JPA)
 - [ ] Version history + promotion flow
 - [ ] Playground (Spring AI — Anthropic + OpenAI)
 - [ ] Version timeline component

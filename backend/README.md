@@ -83,8 +83,16 @@ make backend-config
 
 Domain packages match SPEC §3.3 (`prompt`, `guardrail`, `user`, `usage`, `provider`, `project`, `security`, `common`).
 
+**`prompt/` (Phase 1):** Spring Data JPA entities/repositories for `prompts` and
+`prompt_versions` (Flyway V2/V3). REST under `/api/v1/prompts` — create/list/get/update/delete
+prompt, create/list/get version (new versions always `draft`; promotion/playground are separate
+issues). Hibernate `ddl-auto=validate` — Flyway owns schema.
+
 **`guardrail/` (Phase 2):** core evaluators (`KeywordBlocklistEvaluator`, `RegexFilterEvaluator`,
 `MaxLengthEvaluator`) plus `GuardrailCallAdvisor` (Spring AI `CallAdvisor`). Guardrail and
 guardrail-set CRUD + ordered evaluate live under `/api/v1/guardrails` and
-`/api/v1/guardrail-sets` (Flyway V4/V5 + V10 `short_circuit_on_block`). `api-server` depends
-on `spring-ai-client-chat` for the advisor API (no LLM provider starter yet).
+`/api/v1/guardrail-sets` (Flyway V4/V5 + V10 `short_circuit_on_block`), still on JdbcTemplate.
+`api-server` depends on `spring-ai-client-chat` for the advisor API (no LLM provider starter yet).
+
+**Persistence:** hybrid — JPA for prompts; JdbcTemplate for project + guardrail until those
+packages are migrated.
