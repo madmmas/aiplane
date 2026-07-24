@@ -84,6 +84,7 @@ make backend-config
 Domain packages match SPEC §3.3 (`prompt`, `guardrail`, `user`, `usage`, `provider`, `project`, `security`, `common`).
 
 **`guardrail/` (Phase 2):** core evaluators (`KeywordBlocklistEvaluator`, `RegexFilterEvaluator`,
-`MaxLengthEvaluator`) plus `GuardrailCallAdvisor` (Spring AI `CallAdvisor`). Persistence and
-REST for guardrail sets land in #55. `api-server` depends on `spring-ai-client-chat` for the
-advisor API (no LLM provider starter yet).
+`MaxLengthEvaluator`) plus `GuardrailCallAdvisor` (Spring AI `CallAdvisor`). Guardrail and
+guardrail-set CRUD + ordered evaluate live under `/api/v1/guardrails` and
+`/api/v1/guardrail-sets` (Flyway V4/V5 + V10 `short_circuit_on_block`). `api-server` depends
+on `spring-ai-client-chat` for the advisor API (no LLM provider starter yet).

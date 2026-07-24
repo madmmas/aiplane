@@ -28,6 +28,25 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Guardrail sets: ordered JDBC membership + short-circuit flag
+
+#55 adds CRUD for `guardrail_sets` / `guardrail_set_members` and
+`POST /api/v1/guardrail-sets/:id/evaluate`. Evaluation order is the `position` column
+(ascending). Short-circuit is a first-class column (`V10__guardrail_sets_short_circuit`)
+defaulting to `true`, overridable per evaluate request — so a test panel can "run all
+rules" without mutating the saved set.
+
+Still on JdbcTemplate (same deliberate SPEC drift as the scaffold). Individual guardrail
+CRUD shipped in the same PR because sets are useless without members; UI (#56) will call
+both.
+
+Also flipped Maven `parameters>true</parameters>` so Spring MVC can bind `@PathVariable` /
+`@RequestParam` without repeating names everywhere. Hardened
+`AbstractPostgresIntegrationTest` to start Postgres once in a static initializer — `@Container`
+on a shared parent was stopping the DB between IT classes once we added more of them.
+
+---
+
 ## 2026-07-24 — Guardrail evaluators as Spring AI CallAdvisor (before CRUD)
 
 Phase 2 starts with pure evaluators (#54) before persistence/CRUD (#55) and UI (#56). I

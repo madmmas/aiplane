@@ -1,16 +1,16 @@
 package dev.madmmas.aimanager.support;
 
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Shared Postgres Testcontainers fixture for {@code *IT} classes.
  *
- * <p>Subclasses get a real Flyway-migrated database via {@code @ServiceConnection}.
+ * <p>The container is started once in a static initializer (not {@code @Container}) so it stays up
+ * across every {@code @SpringBootTest} class in the failsafe run. {@code @Container} on a shared
+ * parent field stops the DB between classes and leaves later contexts with a dead JDBC URL.
  */
-@Testcontainers
 public abstract class AbstractPostgresIntegrationTest {
 
   static {
@@ -18,7 +18,17 @@ public abstract class AbstractPostgresIntegrationTest {
     System.setProperty("api.version", "1.44");
   }
 
-  @Container
-  @ServiceConnection
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+  @SuppressWarnings("resource")
+  static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
+
+  static {
+    POSTGRES.start();
+  }
+
+  @DynamicPropertySource
+  static void registerDatasource(DynamicPropertyRegistry registry) {
+    registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
+    registry.add("spring.datasource.username", POSTGRES::getUsername);
+    registry.add("spring.datasource.password", POSTGRES::getPassword);
+  }
 }

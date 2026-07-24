@@ -26,6 +26,8 @@ export interface GuardrailSet {
   id: string;
   projectId: string;
   name: string;
+  /** When true, evaluation stops on the first blocking failure. */
+  shortCircuitOnBlock: boolean;
   /** Ordered list of guardrail IDs in this set. */
   guardrailIds: string[];
   createdAt: IsoDateTime;
