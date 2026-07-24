@@ -28,6 +28,17 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Usage overview dashboard KPIs + Recharts (#59)
+
+Built the `usages-data` MFE as a single-page overview (no router for MVP), mirroring
+Guardrail/Prompt Manager providers and federation shared deps. KPIs come from
+`useUsageSummary`; avg latency is computed client-side from `useUsageEvents`
+(summary DTO has no `avgLatencyMs` — not worth a backend change for one mean).
+Chart series groups those same events by UTC day. Extended api-client usage mocks
+with multi-day seed fixtures so standalone `useMocks: true` shows real numbers.
+
+---
+
 ## 2026-07-24 — Cost rates compute-on-ingest + summary APIs (#58)
 
 Chose **compute-on-ingest** over a scheduled aggregation job: simpler MVP, cost is

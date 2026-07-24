@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prompt Manager MFE: library + create/edit, version timeline with promote, editor, and playground panel; `@repo/api-client` prompt/version/playground hooks and mocks (#53)
 - Batched usage event ingest (`POST /api/v1/usage/events`) with all-or-nothing validation over Flyway V8 `usage_events`, plus `@repo/api-client` `useIngestUsageEvents` / mock helper (#57)
 - Cost tracking: YAML `aiplane.cost-rates` + `CostRateRegistry`, compute-on-ingest when `costUsd` omitted, summary / events / projection read APIs, and `@repo/api-client` `useUsageSummary` / `useUsageEvents` / `useUsageCostProjection` hooks (#58)
+- Usages-data MFE overview dashboard: KPI tiles, provider breakdown, Recharts time-series, project/period filters wired to summary + events hooks (#59)
 
 ### Changed
 
