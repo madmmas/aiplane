@@ -28,6 +28,16 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Guardrail UI: mock-first hooks + host Tailwind
+
+#56 builds the guardrail remote on `@repo/api-client` hooks against the #55 REST
+shape, with mock evaluation so the MFE works before flipping `useMocks: false`.
+Shared `@tanstack/react-query` and `@repo/api-client` as Module Federation
+singletons so the remote can reuse the dashboard's providers/context. Ordering
+uses Up/Down buttons (not DnD) — enough for MVP and easier to test with RTL.
+
+---
+
 ## 2026-07-24 — Guardrail sets: ordered JDBC membership + short-circuit flag
 
 #55 adds CRUD for `guardrail_sets` / `guardrail_set_members` and
