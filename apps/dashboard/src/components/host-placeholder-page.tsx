@@ -1,4 +1,4 @@
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui";
+import { Badge, Card, CardContent, CardDescription, CardHeader } from "@repo/ui";
 
 /** Host-owned placeholder until Phase 5 / settings land. */
 export function HostPlaceholderPage({
@@ -16,7 +16,6 @@ export function HostPlaceholderPage({
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">

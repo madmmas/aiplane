@@ -11,7 +11,7 @@ describe("HostPlaceholderPage", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "Providers" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Providers" })).toBeInTheDocument();
     expect(screen.getByText("Configure provider credentials per project.")).toBeInTheDocument();
     expect(screen.getByText("host")).toBeInTheDocument();
   });
