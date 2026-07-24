@@ -21,7 +21,13 @@ export type {
   VersionMetrics,
 } from "./prompt";
 
-export type { Guardrail, GuardrailConfig, GuardrailSet } from "./guardrail";
+export type {
+  EvaluatorResult,
+  Guardrail,
+  GuardrailConfig,
+  GuardrailSet,
+  GuardrailSetEvaluateResponse,
+} from "./guardrail";
 
 export type {
   APIKey,

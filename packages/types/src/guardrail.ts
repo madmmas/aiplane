@@ -32,3 +32,21 @@ export interface GuardrailSet {
   guardrailIds: string[];
   createdAt: IsoDateTime;
 }
+
+/** Per-rule result from `POST /api/v1/guardrails/:id/test` or set evaluate. */
+export interface EvaluatorResult {
+  guardrailId: string;
+  name: string;
+  type: string;
+  stage: string;
+  passed: boolean;
+  reason: string;
+  action?: string | null;
+  matchedFragment?: string | null;
+}
+
+export interface GuardrailSetEvaluateResponse {
+  blocked: boolean;
+  shortCircuited: boolean;
+  results: EvaluatorResult[];
+}

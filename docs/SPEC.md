@@ -1000,7 +1000,7 @@ AZURE_OPENAI_KEY=
 ### Phase 2 — Guardrail MVP
 - [x] Keyword blocklist + regex filter + max-length evaluators (#54)
 - [x] Guardrail sets with ordering (#55)
-- [ ] Test panel UI (#56)
+- [x] Test panel UI (#56)
 
 ### Phase 3 — Usage Telemetry
 - [ ] Usage event ingest (write endpoint for client apps)
