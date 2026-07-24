@@ -17,6 +17,31 @@ public enum PromptVersionStatus {
     return wireValue;
   }
 
+  /**
+   * Valid promotion path: draft → testing → active → archived. No skipping steps; archived is
+   * terminal.
+   */
+  public boolean canTransitionTo(PromptVersionStatus target) {
+    if (target == null || target == this) {
+      return false;
+    }
+    return switch (this) {
+      case DRAFT -> target == TESTING;
+      case TESTING -> target == ACTIVE;
+      case ACTIVE -> target == ARCHIVED;
+      case ARCHIVED -> false;
+    };
+  }
+
+  /** Next status when advancing one step along the promotion path, or empty if terminal. */
+  public PromptVersionStatus nextPromotionStatus() {
+    return switch (this) {
+      case DRAFT -> TESTING;
+      case TESTING -> ACTIVE;
+      case ACTIVE, ARCHIVED -> null;
+    };
+  }
+
   public static PromptVersionStatus fromWireValue(String value) {
     if (value == null || value.isBlank()) {
       throw new IllegalArgumentException("status is required");

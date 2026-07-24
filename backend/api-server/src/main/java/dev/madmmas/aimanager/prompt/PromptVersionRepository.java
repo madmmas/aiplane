@@ -12,6 +12,8 @@ public interface PromptVersionRepository extends JpaRepository<PromptVersion, St
 
   Optional<PromptVersion> findByIdAndPromptId(String id, String promptId);
 
+  List<PromptVersion> findByPromptIdAndStatus(String promptId, PromptVersionStatus status);
+
   @Query(
       "select coalesce(max(v.version), 0) from PromptVersion v where v.promptId = :promptId")
   int findMaxVersionByPromptId(@Param("promptId") String promptId);

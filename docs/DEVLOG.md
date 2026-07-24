@@ -28,6 +28,19 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Version promotion state machine + export hook stub (#51)
+
+Promotion is a strict path (`draft → testing → active → archived`) on
+`PromptVersionStatus.canTransitionTo` — no skipping Testing. Activating a version
+archives any other active row for that prompt, sets `prompts.active_version_id`,
+and calls `PromptConfigExporter.onVersionActivated`. The default bean
+(`NoOpPromptConfigExporter`) only logs; Phase 5 owns the Config Server write.
+
+Primary API is SPEC's `PATCH .../versions/{vid}/status`; `POST .../promote`
+advances one step for convenience. Both share the same transition service path.
+
+---
+
 ## 2026-07-24 — Adopted JPA for prompts (JdbcTemplate stays for project/guardrail)
 
 #50 finally resolves the SPEC vs scaffold drift called out on 2026-07-22:
