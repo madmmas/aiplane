@@ -24,17 +24,17 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#48](https://github.com/madmmas/aiplane/issues/48) | Backend JUnit/Testcontainers/JaCoCo setup | `chore/backend-testing-setup` | Hygiene | Done ([#69](https://github.com/madmmas/aiplane/pull/69)) |
 | [#49](https://github.com/madmmas/aiplane/issues/49) | Wire test execution + coverage into CI | `chore/ci-test-execution` | Hygiene | Done ([#72](https://github.com/madmmas/aiplane/pull/72)) |
 | [#70](https://github.com/madmmas/aiplane/issues/70) | Add CODEOWNERS and CHANGELOG.md | `docs/codeowners-and-changelog` | Hygiene | Done ([#73](https://github.com/madmmas/aiplane/pull/73)) |
-| [#71](https://github.com/madmmas/aiplane/issues/71) | Add DEVLOG for engineering decisions | `docs/add-devlog` | Hygiene | Open |
+| [#71](https://github.com/madmmas/aiplane/issues/71) | Add DEVLOG for engineering decisions | `docs/add-devlog` | Hygiene | Done ([#74](https://github.com/madmmas/aiplane/pull/74)) |
 | [#18](https://github.com/madmmas/aiplane/issues/18) | Phase 1 — Prompt Manager MVP | `feat/phase-1-prompt-manager-mvp` | Phase 1 | Open |
-| [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 | Open (split: #54–#56) |
+| [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 | Done (via [#75](https://github.com/madmmas/aiplane/pull/75)–[#77](https://github.com/madmmas/aiplane/pull/77)) |
 | [#54](https://github.com/madmmas/aiplane/issues/54) | Core evaluators (keyword / regex / max-length) | `feat/phase-2-guardrail-evaluators` | Phase 2 | Done ([#75](https://github.com/madmmas/aiplane/pull/75)) |
 | [#55](https://github.com/madmmas/aiplane/issues/55) | Guardrail sets with ordering + short-circuit | `feat/phase-2-guardrail-sets` | Phase 2 | Done ([#76](https://github.com/madmmas/aiplane/pull/76)) |
-| [#56](https://github.com/madmmas/aiplane/issues/56) | Rule builder + test panel UI | `feat/phase-2-guardrail-ui` | Phase 2 | Open |
+| [#56](https://github.com/madmmas/aiplane/issues/56) | Rule builder + test panel UI | `feat/phase-2-guardrail-ui` | Phase 2 | Done ([#77](https://github.com/madmmas/aiplane/pull/77)) |
 | [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 | Open |
 | [#16](https://github.com/madmmas/aiplane/issues/16) | Phase 4 — User Management + API Keys | `feat/phase-4-user-manager` | Phase 4 | Open |
 | [#17](https://github.com/madmmas/aiplane/issues/17) | Phase 5 — Config Server Integration | `feat/phase-5-config-server` | Phase 5 | Open |
 
-**Foundation complete.** Next up: Phase 0 frontend ([#8](https://github.com/madmmas/aiplane/issues/8)) and/or backend ([#13](https://github.com/madmmas/aiplane/issues/13)).
+**Phase 2 complete** (evaluators, sets, UI via #54–#56). Next up: Phase 1 Prompt Manager ([#18](https://github.com/madmmas/aiplane/issues/18)) — SPEC still lists it before Phase 2 in the dependency chain.
 
 ---
 

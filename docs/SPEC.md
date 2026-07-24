@@ -998,6 +998,9 @@ AZURE_OPENAI_KEY=
 - [ ] Config Server export on version promotion
 
 ### Phase 2 — Guardrail MVP
+
+Complete via epic [#14](https://github.com/madmmas/aiplane/issues/14) (sub-issues [#54](https://github.com/madmmas/aiplane/issues/54)–[#56](https://github.com/madmmas/aiplane/issues/56)).
+
 - [x] Keyword blocklist + regex filter + max-length evaluators (#54)
 - [x] Guardrail sets with ordering (#55)
 - [x] Test panel UI (#56)
