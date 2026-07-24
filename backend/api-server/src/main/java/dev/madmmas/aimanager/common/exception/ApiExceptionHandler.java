@@ -21,6 +21,21 @@ public class ApiExceptionHandler {
     return body(HttpStatus.BAD_REQUEST, ex.getMessage());
   }
 
+  @ExceptionHandler(ProviderNotConfiguredException.class)
+  ResponseEntity<Map<String, Object>> providerNotConfigured(ProviderNotConfiguredException ex) {
+    return body(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+  }
+
+  @ExceptionHandler(ProviderTimeoutException.class)
+  ResponseEntity<Map<String, Object>> providerTimeout(ProviderTimeoutException ex) {
+    return body(HttpStatus.GATEWAY_TIMEOUT, ex.getMessage());
+  }
+
+  @ExceptionHandler(ProviderCallException.class)
+  ResponseEntity<Map<String, Object>> providerCall(ProviderCallException ex) {
+    return body(HttpStatus.BAD_GATEWAY, ex.getMessage());
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   ResponseEntity<Map<String, Object>> validation(MethodArgumentNotValidException ex) {
     String message =

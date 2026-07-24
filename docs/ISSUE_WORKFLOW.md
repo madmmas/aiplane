@@ -28,6 +28,7 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#18](https://github.com/madmmas/aiplane/issues/18) | Phase 1 — Prompt Manager MVP | `feat/phase-1-prompt-manager-mvp` | Phase 1 | Open |
 | [#50](https://github.com/madmmas/aiplane/issues/50) | Prompt CRUD REST API (Spring Data JPA) | `feat/phase-1-prompt-crud` | Phase 1 | Open |
 | [#51](https://github.com/madmmas/aiplane/issues/51) | Version promotion flow + export hook | `feat/phase-1-version-promotion` | Phase 1 | Open |
+| [#52](https://github.com/madmmas/aiplane/issues/52) | Playground endpoint (Spring AI — Anthropic + OpenAI) | `feat/phase-1-playground-endpoint` | Phase 1 | Open |
 | [#14](https://github.com/madmmas/aiplane/issues/14) | Phase 2 — Guardrail MVP | `feat/phase-2-guardrail` | Phase 2 | Done (via [#75](https://github.com/madmmas/aiplane/pull/75)–[#77](https://github.com/madmmas/aiplane/pull/77)) |
 | [#54](https://github.com/madmmas/aiplane/issues/54) | Core evaluators (keyword / regex / max-length) | `feat/phase-2-guardrail-evaluators` | Phase 2 | Done ([#75](https://github.com/madmmas/aiplane/pull/75)) |
 | [#55](https://github.com/madmmas/aiplane/issues/55) | Guardrail sets with ordering + short-circuit | `feat/phase-2-guardrail-sets` | Phase 2 | Done ([#76](https://github.com/madmmas/aiplane/pull/76)) |
@@ -36,7 +37,7 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#16](https://github.com/madmmas/aiplane/issues/16) | Phase 4 — User Management + API Keys | `feat/phase-4-user-manager` | Phase 4 | Open |
 | [#17](https://github.com/madmmas/aiplane/issues/17) | Phase 5 — Config Server Integration | `feat/phase-5-config-server` | Phase 5 | Open |
 
-**Phase 2 complete** (evaluators, sets, UI via #54–#56). Phase 1 Prompt Manager epic [#18](https://github.com/madmmas/aiplane/issues/18) is in progress — Prompt CRUD ([#50](https://github.com/madmmas/aiplane/issues/50)), then version promotion ([#51](https://github.com/madmmas/aiplane/issues/51)).
+**Phase 2 complete** (evaluators, sets, UI via #54–#56). Phase 1 Prompt Manager epic [#18](https://github.com/madmmas/aiplane/issues/18) is in progress — Prompt CRUD ([#50](https://github.com/madmmas/aiplane/issues/50)), version promotion ([#51](https://github.com/madmmas/aiplane/issues/51)), then playground ([#52](https://github.com/madmmas/aiplane/issues/52)).
 
 ---
 

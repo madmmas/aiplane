@@ -994,7 +994,7 @@ AZURE_OPENAI_KEY=
 ### Phase 1 — Prompt Manager MVP
 - [x] Prompt CRUD (Spring Data JPA)
 - [x] Version history + promotion flow
-- [ ] Playground (Spring AI — Anthropic + OpenAI)
+- [x] Playground (Spring AI — Anthropic + OpenAI)
 - [ ] Version timeline component
 - [ ] Config Server export on version promotion
   _(interface hooked on Active in #51; real write is Phase 5)_

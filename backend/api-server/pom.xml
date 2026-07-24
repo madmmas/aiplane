@@ -48,10 +48,19 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- ChatClient advisor API (CallAdvisor) for GuardrailCallAdvisor; no provider starter yet. -->
+    <!-- ChatClient advisor API (CallAdvisor) for GuardrailCallAdvisor. -->
     <dependency>
       <groupId>org.springframework.ai</groupId>
       <artifactId>spring-ai-client-chat</artifactId>
+    </dependency>
+    <!-- Model libs (not starters) so missing API keys do not fail startup; beans are conditional. -->
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-openai</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-anthropic</artifactId>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
