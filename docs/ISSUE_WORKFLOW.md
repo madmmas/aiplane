@@ -35,10 +35,13 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#55](https://github.com/madmmas/aiplane/issues/55) | Guardrail sets with ordering + short-circuit | `feat/phase-2-guardrail-sets` | Phase 2 | Done ([#76](https://github.com/madmmas/aiplane/pull/76)) |
 | [#56](https://github.com/madmmas/aiplane/issues/56) | Rule builder + test panel UI | `feat/phase-2-guardrail-ui` | Phase 2 | Done ([#77](https://github.com/madmmas/aiplane/pull/77)) |
 | [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 | Open |
+| [#57](https://github.com/madmmas/aiplane/issues/57) | Usage event ingest endpoint | `feat/phase-3-usage-ingest` | Phase 3 | Done (this PR) |
+| [#58](https://github.com/madmmas/aiplane/issues/58) | Cost tracking with provider rate config | `feat/phase-3-usage-costs` | Phase 3 | Open |
+| [#59](https://github.com/madmmas/aiplane/issues/59) | Usage overview dashboard UI | `feat/phase-3-usage-dashboard` | Phase 3 | Open |
 | [#16](https://github.com/madmmas/aiplane/issues/16) | Phase 4 — User Management + API Keys | `feat/phase-4-user-manager` | Phase 4 | Open |
 | [#17](https://github.com/madmmas/aiplane/issues/17) | Phase 5 — Config Server Integration | `feat/phase-5-config-server` | Phase 5 | Open |
 
-**Phase 1 complete** (CRUD, promotion, playground, UI via #50–#53). **Phase 2 complete** (evaluators, sets, UI via #54–#56). Config Server export on promote remains Phase 5 ([#17](https://github.com/madmmas/aiplane/issues/17); hook stubbed in #51). Next up: Phase 0 leftovers or Phase 3 Usage Telemetry ([#15](https://github.com/madmmas/aiplane/issues/15)).
+**Phase 1 complete** (CRUD, promotion, playground, UI via #50–#53). **Phase 2 complete** (evaluators, sets, UI via #54–#56). Config Server export on promote remains Phase 5 ([#17](https://github.com/madmmas/aiplane/issues/17); hook stubbed in #51). **Phase 3 in progress** — #57 done, next [#58](https://github.com/madmmas/aiplane/issues/58) (cost rates) then [#59](https://github.com/madmmas/aiplane/issues/59) (dashboard UI).
 
 ---
 

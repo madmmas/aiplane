@@ -16,6 +16,16 @@ public class ApiExceptionHandler {
     return body(HttpStatus.NOT_FOUND, ex.getMessage());
   }
 
+  @ExceptionHandler(BatchValidationException.class)
+  ResponseEntity<Map<String, Object>> batchValidation(BatchValidationException ex) {
+    Map<String, Object> payload = new LinkedHashMap<>();
+    payload.put("status", HttpStatus.BAD_REQUEST.value());
+    payload.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+    payload.put("message", ex.getMessage());
+    payload.put("errors", ex.getErrors());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(payload);
+  }
+
   @ExceptionHandler(IllegalArgumentException.class)
   ResponseEntity<Map<String, Object>> badRequest(IllegalArgumentException ex) {
     return body(HttpStatus.BAD_REQUEST, ex.getMessage());

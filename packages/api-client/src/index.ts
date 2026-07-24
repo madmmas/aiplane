@@ -26,6 +26,11 @@ export {
   evaluateMockGuardrailSet,
   resetGuardrailMocks,
 } from "./mocks";
+export {
+  MOCK_USAGE_EVENTS,
+  ingestMockUsageEvents,
+  resetUsageMocks,
+} from "./mocks";
 
 export { useProjects, projectKeys } from "./hooks/use-projects";
 export {
@@ -66,3 +71,8 @@ export {
   type GuardrailSetCreateInput,
   type GuardrailSetUpdateInput,
 } from "./hooks/use-guardrail-sets";
+export {
+  useIngestUsageEvents,
+  usageKeys,
+  type UsageEventIngestInput,
+} from "./hooks/use-usage";

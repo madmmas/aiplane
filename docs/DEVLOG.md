@@ -28,6 +28,22 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Usage event ingest envelope + auth stub (#57)
+
+`POST /api/v1/usage/events` accepts a forward-compatible envelope
+`{ "events": [ ... ] }` (not a bare JSON array) so we can add batch-level
+metadata later without a breaking change. Response is
+`{ "accepted": N, "events": [ ... ] }` with server-generated `ue_*` ids when
+clients omit `id`. Validation is all-or-nothing: any bad row rejects the whole
+batch with `400` and an `errors: ["[i] …"]` list; nothing is persisted.
+
+Auth is intentionally open for now — same as prompts/guardrails — until Phase 4
+wires API-key auth (`ApiKeyAuthenticationFilter`). V8 `usage_events` already
+matched the TypeScript `UsageEvent` shape; persistence follows the Prompt JPA
+pattern (`@Entity` + Spring Data) rather than Guardrail's JdbcTemplate.
+
+---
+
 ## 2026-07-24 — Prompt Manager MFE mirrors Guardrail patterns (#53)
 
 `apps/prompt-manager` now follows the same federation + React Query + mockable
