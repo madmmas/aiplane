@@ -28,6 +28,16 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Prompt Manager MFE mirrors Guardrail patterns (#53)
+
+`apps/prompt-manager` now follows the same federation + React Query + mockable
+`@repo/api-client` shape as Guardrail (#56): shared QueryClient / ApiClientProvider,
+mutable in-memory prompt/version fixtures with `resetPromptMocks()`, and a single-page
+composition (library → timeline → editor → playground) instead of react-router for MVP.
+
+Playground UI calls `POST .../playground/run` through `useRunPlayground`; promote uses
+`POST .../versions/{vid}/promote` so the UI only needs one action for draft→testing→active.
+
 ## 2026-07-24 — Playground via mockable Spring AI port (#52)
 
 `POST /api/v1/prompts/{id}/playground/run` loads a version (explicit `versionId` or
