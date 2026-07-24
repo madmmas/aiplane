@@ -992,6 +992,9 @@ AZURE_OPENAI_KEY=
 - [ ] Dashboard shell: sidebar, project switcher, auth flow
 
 ### Phase 1 — Prompt Manager MVP
+
+Complete via epic [#18](https://github.com/madmmas/aiplane/issues/18) (sub-issues [#50](https://github.com/madmmas/aiplane/issues/50)–[#53](https://github.com/madmmas/aiplane/issues/53)).
+
 - [x] Prompt CRUD (Spring Data JPA)
 - [x] Version history + promotion flow
 - [x] Playground (Spring AI — Anthropic + OpenAI)
