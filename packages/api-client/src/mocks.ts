@@ -40,6 +40,141 @@ export let MOCK_GUARDRAILS: Guardrail[] = [];
 export let MOCK_GUARDRAIL_SETS: GuardrailSet[] = [];
 export let MOCK_USAGE_EVENTS: UsageEvent[] = [];
 
+/** ISO timestamp `days` (and optional hours) before now — always in the past. */
+function daysAgoIso(days: number, hoursAgo = 0): string {
+  return new Date(Date.now() - days * 86_400_000 - hoursAgo * 3_600_000).toISOString();
+}
+
+/**
+ * Seed usage rows across multiple days so the usages-data overview (#59) can
+ * render KPIs + a time-series chart against mocks without ingesting first.
+ * Built fresh on each reset so timestamps stay relative to "now".
+ */
+function buildInitialUsageEvents(): UsageEvent[] {
+  return [
+    {
+      id: "ue_seed_01",
+      projectId: "proj_news_radar",
+      provider: "anthropic",
+      model: "claude-sonnet-4-20250514",
+      inputTokens: 1200,
+      outputTokens: 400,
+      latencyMs: 820,
+      costUsd: 0.0096,
+      status: "success",
+      timestamp: daysAgoIso(0, 1),
+    },
+    {
+      id: "ue_seed_02",
+      projectId: "proj_news_radar",
+      provider: "openai",
+      model: "gpt-4o-mini",
+      inputTokens: 800,
+      outputTokens: 200,
+      latencyMs: 410,
+      costUsd: 0.00024,
+      status: "success",
+      timestamp: daysAgoIso(0, 5),
+    },
+    {
+      id: "ue_seed_03",
+      projectId: "proj_news_radar",
+      provider: "anthropic",
+      model: "claude-haiku-4-20250414",
+      inputTokens: 500,
+      outputTokens: 150,
+      latencyMs: 290,
+      costUsd: 0.001,
+      status: "success",
+      timestamp: daysAgoIso(1, 2),
+    },
+    {
+      id: "ue_seed_04",
+      projectId: "proj_news_radar",
+      provider: "openai",
+      model: "gpt-4o",
+      inputTokens: 2000,
+      outputTokens: 600,
+      latencyMs: 1100,
+      costUsd: 0.011,
+      status: "success",
+      timestamp: daysAgoIso(2, 3),
+    },
+    {
+      id: "ue_seed_05",
+      projectId: "proj_news_radar",
+      provider: "anthropic",
+      model: "claude-sonnet-4-20250514",
+      inputTokens: 900,
+      outputTokens: 300,
+      latencyMs: 750,
+      costUsd: 0.0072,
+      status: "success",
+      timestamp: daysAgoIso(4, 1),
+    },
+    {
+      id: "ue_seed_06",
+      projectId: "proj_news_radar",
+      provider: "openai",
+      model: "gpt-4o-mini",
+      inputTokens: 400,
+      outputTokens: 100,
+      latencyMs: 320,
+      costUsd: 0.00012,
+      status: "error",
+      timestamp: daysAgoIso(6, 2),
+    },
+    {
+      id: "ue_seed_07",
+      projectId: "proj_news_radar",
+      provider: "anthropic",
+      model: "claude-haiku-4-20250414",
+      inputTokens: 1500,
+      outputTokens: 500,
+      latencyMs: 540,
+      costUsd: 0.0032,
+      status: "success",
+      timestamp: daysAgoIso(10, 1),
+    },
+    {
+      id: "ue_seed_08",
+      projectId: "proj_news_radar",
+      provider: "openai",
+      model: "gpt-4o",
+      inputTokens: 1000,
+      outputTokens: 250,
+      latencyMs: 980,
+      costUsd: 0.005,
+      status: "success",
+      timestamp: daysAgoIso(18, 4),
+    },
+    {
+      id: "ue_seed_09",
+      projectId: "proj_ackloop",
+      provider: "openai",
+      model: "gpt-4o-mini",
+      inputTokens: 300,
+      outputTokens: 80,
+      latencyMs: 260,
+      costUsd: 0.00009,
+      status: "success",
+      timestamp: daysAgoIso(1, 3),
+    },
+    {
+      id: "ue_seed_10",
+      projectId: "proj_ackloop",
+      provider: "anthropic",
+      model: "claude-haiku-4-20250414",
+      inputTokens: 700,
+      outputTokens: 200,
+      latencyMs: 480,
+      costUsd: 0.00136,
+      status: "success",
+      timestamp: daysAgoIso(3, 2),
+    },
+  ];
+}
+
 const DEFAULT_PARAMS: ModelParameters = {
   temperature: 0.2,
   maxTokens: 1024,
@@ -227,6 +362,7 @@ export function resetPromptMocks(): void {
 
 resetGuardrailMocks();
 resetPromptMocks();
+resetUsageMocks();
 
 export function listMockProjects(): Project[] {
   return MOCK_PROJECTS;
@@ -580,7 +716,7 @@ export function evaluateMockGuardrailSet(
 
 /** Reset mutable usage event fixtures (call from tests between cases). */
 export function resetUsageMocks(): void {
-  MOCK_USAGE_EVENTS = [];
+  MOCK_USAGE_EVENTS = buildInitialUsageEvents();
 }
 
 const ALLOWED_PROVIDERS = new Set<LLMProvider>([

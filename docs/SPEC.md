@@ -1012,7 +1012,7 @@ Complete via epic [#14](https://github.com/madmmas/aiplane/issues/14) (sub-issue
 
 ### Phase 3 — Usage Telemetry
 - [x] Usage event ingest (write endpoint for client apps) (#57)
-- [ ] Overview dashboard (KPIs + Recharts) (#59)
+- [x] Overview dashboard (KPIs + Recharts) (#59)
 - [x] Cost tracking with provider rate config (#58)
 
 ### Phase 4 — User Management + API Keys
