@@ -10,4 +10,6 @@ public interface ProjectRepository {
   List<String> findAllSlugs();
 
   boolean existsBySlug(String slug);
+
+  boolean existsById(String id);
 }

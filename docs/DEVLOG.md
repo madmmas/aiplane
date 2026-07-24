@@ -28,6 +28,26 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Adopted JPA for prompts (JdbcTemplate stays for project/guardrail)
+
+#50 finally resolves the SPEC vs scaffold drift called out on 2026-07-22:
+`api-server` now depends on `spring-boot-starter-data-jpa` with
+`spring.jpa.hibernate.ddl-auto=validate` so Flyway remains the schema owner.
+
+Prompts and prompt versions are real `@Entity` / Spring Data repositories over
+V2/V3 tables (`TEXT[]` tags via `@JdbcTypeCode(SqlTypes.ARRAY)`, JSONB
+parameters/metrics via `SqlTypes.JSON`). Version create always lands as `draft`
+with an auto-incremented version number — promotion (#51) and playground (#52)
+stay out of this PR.
+
+**Deliberate hybrid:** project and guardrail keep JdbcTemplate. Rewriting working
+JDBC repositories just to "unify" would bloat the Prompt CRUD PR and risk
+regressions in Phase 2 surfaces. New domains that match SPEC's entity model
+should prefer JPA; migrate older JDBC packages when they next need a substantial
+change.
+
+---
+
 ## 2026-07-24 — Guardrail UI: mock-first hooks + host Tailwind
 
 #56 builds the guardrail remote on `@repo/api-client` hooks against the #55 REST

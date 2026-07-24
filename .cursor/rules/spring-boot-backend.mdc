@@ -38,16 +38,15 @@ alwaysApply: false
   both Dockerfiles — it needs its own dedicated issue/PR, not a drive-by rename inside an
   unrelated feature change.
 
-## Persistence — JdbcTemplate today, not JPA yet
-- `api-server/pom.xml` currently depends on `spring-boot-starter-jdbc`, **not**
-  `spring-boot-starter-data-jpa` — the existing test uses raw `JdbcTemplate` directly.
-  This is inconsistent with `docs/SPEC.md`'s stated intent ("Spring Data JPA for clean
-  repository-pattern persistence").
-- Resolve this explicitly before Phase 1 backend work (Prompt CRUD) goes further: either
-  add `spring-boot-starter-data-jpa` and write real `@Entity`/`@Repository` classes as
-  SPEC describes, or update SPEC to reflect a deliberate JdbcTemplate-based approach.
-  Don't let code and SPEC drift further apart — pick one and note the decision in the
-  Phase 1 CRUD PR.
+## Persistence — hybrid (JPA for prompts, JdbcTemplate elsewhere)
+- Prompt domain uses `spring-boot-starter-data-jpa` with
+  `spring.jpa.hibernate.ddl-auto=validate` (Flyway owns schema). Entities live under
+  `dev.madmmas.aimanager.prompt`.
+- Project and guardrail still use `JdbcTemplate` / Spring JDBC — do not rewrite them
+  opportunistically inside an unrelated PR; migrate when those packages need a substantial
+  change.
+- Prefer JPA for new domains that map cleanly to SPEC entities. Keep JDBC when a package
+  already ships working repositories and the change is not about persistence style.
 
 ## Flyway migrations
 - Versioned migrations live in `backend/api-server/src/main/resources/db/migration/`,

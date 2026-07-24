@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Prompt / PromptVersion CRUD REST API via Spring Data JPA over Flyway `prompts` / `prompt_versions` (#50)
 - Guardrail core evaluators: keyword blocklist, regex filter (ReDoS-bounded), and max-length, plus a Spring AI `CallAdvisor` that runs them against prompt/response text (#54)
 - Guardrail set persistence (ordered members + configurable short-circuit), CRUD REST API, and evaluate endpoint (#55)
 - Guardrail MFE rule builder + ordered set editor + test panel, with `@repo/api-client` hooks and mocks (#56)
+
+### Changed
+
+- `api-server` now includes `spring-boot-starter-data-jpa` (`ddl-auto=validate`); project and guardrail domains remain on JdbcTemplate for now (#50)
 
 ## [0.1.0] - 2026-07-22
 
