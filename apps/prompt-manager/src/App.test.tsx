@@ -73,7 +73,7 @@ describe("Prompt Manager App", () => {
 
     expect(await screen.findByText("news-radar/dedup-judge")).toBeInTheDocument();
 
-    const timeline = screen.getByLabelText("Prompt versions");
+    const timeline = await screen.findByLabelText("Prompt versions");
     expect(within(timeline).getByText("draft")).toBeInTheDocument();
     expect(
       within(timeline).getByRole("button", { name: "Promote to testing" }),
