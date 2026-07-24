@@ -1,31 +1,59 @@
 package dev.madmmas.aimanager.usage;
 
+import dev.madmmas.aimanager.usage.dto.UsageCostProjectionResponse;
 import dev.madmmas.aimanager.usage.dto.UsageEventIngestRequest;
 import dev.madmmas.aimanager.usage.dto.UsageEventIngestResponse;
+import dev.madmmas.aimanager.usage.dto.UsageEventResponse;
+import dev.madmmas.aimanager.usage.dto.UsageSummaryResponse;
+import java.time.Instant;
+import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Usage telemetry write API. Auth via API key is deferred to Phase 4 — endpoints are open for now
- * (same stance as prompts/guardrails).
+ * Usage telemetry API. Auth via API key is deferred to Phase 4 — endpoints are open for now (same
+ * stance as prompts/guardrails).
  */
 @RestController
 @RequestMapping("/api/v1/usage")
 public class UsageController {
 
-  private final UsageService service;
+  private final UsageService usageService;
+  private final UsageSummaryService usageSummaryService;
 
-  public UsageController(UsageService service) {
-    this.service = service;
+  public UsageController(UsageService usageService, UsageSummaryService usageSummaryService) {
+    this.usageService = usageService;
+    this.usageSummaryService = usageSummaryService;
   }
 
   @PostMapping("/events")
   @ResponseStatus(HttpStatus.CREATED)
   UsageEventIngestResponse ingest(@RequestBody UsageEventIngestRequest request) {
-    return service.ingest(request);
+    return usageService.ingest(request);
+  }
+
+  @GetMapping("/events")
+  List<UsageEventResponse> listEvents(
+      @RequestParam("projectId") String projectId,
+      @RequestParam("from") Instant from,
+      @RequestParam("to") Instant to) {
+    return usageSummaryService.listEvents(projectId, from, to);
+  }
+
+  @GetMapping("/summary")
+  UsageSummaryResponse summary(
+      @RequestParam("projectId") String projectId, @RequestParam("period") String period) {
+    return usageSummaryService.summary(projectId, period);
+  }
+
+  @GetMapping("/costs/projection")
+  UsageCostProjectionResponse projection(@RequestParam("projectId") String projectId) {
+    return usageSummaryService.projection(projectId);
   }
 }

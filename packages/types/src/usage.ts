@@ -61,3 +61,14 @@ export interface UsageSummary {
   totalCostUsd: number;
   byProvider: UsageProviderBreakdown[];
 }
+
+/**
+ * Lean monthly estimate from `GET /api/v1/usage/costs/projection`:
+ * avg daily cost over the last `windowDays` (7) × 30.
+ */
+export interface UsageCostProjection {
+  projectId: string;
+  windowDays: number;
+  avgDailyCostUsd: number;
+  projectedMonthlyCostUsd: number;
+}

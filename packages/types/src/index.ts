@@ -45,4 +45,5 @@ export type {
   UsageEventIngestResponse,
   UsageProviderBreakdown,
   UsageSummary,
+  UsageCostProjection,
 } from "./usage";

@@ -10,9 +10,12 @@ import type {
   Prompt,
   PromptVersion,
   PromptVersionStatus,
+  UsageCostProjection,
   UsageEvent,
   UsageEventCreateInput,
   UsageEventIngestResponse,
+  UsageProviderBreakdown,
+  UsageSummary,
 } from "@repo/types";
 
 /** In-memory fixtures used while the Spring API is not yet available. */
@@ -591,6 +594,22 @@ const ALLOWED_PROVIDERS = new Set<LLMProvider>([
 
 const ALLOWED_STATUSES = new Set(["success", "error", "guardrail-blocked"]);
 
+/** Mirrors `aiplane.cost-rates.rates` defaults in api-server application.yml. */
+const MOCK_COST_RATES: Record<string, { inputUsdPer1k: number; outputUsdPer1k: number }> = {
+  "claude-sonnet-4-20250514": { inputUsdPer1k: 0.003, outputUsdPer1k: 0.015 },
+  "claude-haiku-4-20250414": { inputUsdPer1k: 0.0008, outputUsdPer1k: 0.004 },
+  "gpt-4o": { inputUsdPer1k: 0.0025, outputUsdPer1k: 0.01 },
+  "gpt-4o-mini": { inputUsdPer1k: 0.00015, outputUsdPer1k: 0.0006 },
+};
+
+function computeMockCost(model: string, inputTokens: number, outputTokens: number): number {
+  const rate = MOCK_COST_RATES[model];
+  if (!rate) return 0;
+  const cost =
+    (inputTokens / 1000) * rate.inputUsdPer1k + (outputTokens / 1000) * rate.outputUsdPer1k;
+  return Math.round(cost * 1e8) / 1e8;
+}
+
 /**
  * In-memory stand-in for `POST /api/v1/usage/events`. Mirrors server all-or-nothing
  * validation so the usages-data MFE (#59) can develop against mocks first.
@@ -636,7 +655,9 @@ function toMockUsageEvent(input: UsageEventCreateInput): UsageEvent {
   const inputTokens = input.inputTokens ?? 0;
   const outputTokens = input.outputTokens ?? 0;
   const latencyMs = input.latencyMs ?? 0;
-  const costUsd = input.costUsd ?? 0;
+  const model = input.model.trim();
+  const costUsd =
+    input.costUsd === undefined ? computeMockCost(model, inputTokens, outputTokens) : input.costUsd;
   if (inputTokens < 0) throw new Error("inputTokens must be >= 0");
   if (outputTokens < 0) throw new Error("outputTokens must be >= 0");
   if (latencyMs < 0) throw new Error("latencyMs must be >= 0");
@@ -649,12 +670,121 @@ function toMockUsageEvent(input: UsageEventCreateInput): UsageEvent {
     promptVersionId: input.promptVersionId,
     apiKeyId: input.apiKeyId,
     provider: input.provider,
-    model: input.model.trim(),
+    model,
     inputTokens,
     outputTokens,
     latencyMs,
     costUsd,
     status: input.status,
     timestamp: input.timestamp ?? new Date().toISOString(),
+  };
+}
+
+function parsePeriodRange(period: string, now = new Date()): { from: Date; to: Date } {
+  const relative = /^(\d+)d$/.exec(period);
+  if (relative) {
+    const days = Number(relative[1]);
+    if (days <= 0) throw new Error("period day count must be > 0");
+    return { from: new Date(now.getTime() - days * 86_400_000), to: now };
+  }
+  if (/^\d{4}-\d{2}$/.test(period)) {
+    const [year, month] = period.split("-").map(Number);
+    const from = new Date(Date.UTC(year, month - 1, 1));
+    const to = new Date(Date.UTC(year, month, 1));
+    return { from, to };
+  }
+  throw new Error("period must be 7d, 30d, or yyyy-MM");
+}
+
+/** In-memory stand-in for `GET /api/v1/usage/summary`. */
+export function getMockUsageSummary(projectId: string, period: string): UsageSummary {
+  if (!projectId?.trim()) throw new Error("projectId is required");
+  const projectExists = MOCK_PROJECTS.some((p) => p.id === projectId);
+  if (!projectExists) throw new Error(`Unknown projectId: ${projectId}`);
+
+  const { from, to } = parsePeriodRange(period.trim());
+  const events = MOCK_USAGE_EVENTS.filter((e) => {
+    if (e.projectId !== projectId) return false;
+    const ts = new Date(e.timestamp).getTime();
+    // Inclusive upper bound so events stamped "now" are visible immediately in mocks.
+    return ts >= from.getTime() && ts <= to.getTime();
+  });
+
+  const byProviderMap = new Map<LLMProvider, UsageProviderBreakdown>();
+  for (const e of events) {
+    const row = byProviderMap.get(e.provider) ?? {
+      provider: e.provider,
+      requests: 0,
+      inputTokens: 0,
+      outputTokens: 0,
+      costUsd: 0,
+    };
+    row.requests += 1;
+    row.inputTokens += e.inputTokens;
+    row.outputTokens += e.outputTokens;
+    row.costUsd += e.costUsd;
+    byProviderMap.set(e.provider, row);
+  }
+
+  const byProvider = [...byProviderMap.values()];
+  return {
+    projectId,
+    period: period.trim(),
+    totalRequests: events.length,
+    totalInputTokens: byProvider.reduce((s, r) => s + r.inputTokens, 0),
+    totalOutputTokens: byProvider.reduce((s, r) => s + r.outputTokens, 0),
+    totalCostUsd: byProvider.reduce((s, r) => s + r.costUsd, 0),
+    byProvider,
+  };
+}
+
+/** In-memory stand-in for `GET /api/v1/usage/events`. */
+export function listMockUsageEvents(
+  projectId: string,
+  from: string,
+  to: string,
+  limit = 500,
+): UsageEvent[] {
+  if (!projectId?.trim()) throw new Error("projectId is required");
+  const projectExists = MOCK_PROJECTS.some((p) => p.id === projectId);
+  if (!projectExists) throw new Error(`Unknown projectId: ${projectId}`);
+  if (!from || !to) throw new Error("from and to are required (ISO-8601 instants)");
+
+  const fromMs = new Date(from).getTime();
+  const toMs = new Date(to).getTime();
+  if (Number.isNaN(fromMs) || Number.isNaN(toMs)) {
+    throw new Error("from and to must be valid ISO-8601 instants");
+  }
+  if (fromMs > toMs) throw new Error("from must be <= to");
+
+  return MOCK_USAGE_EVENTS.filter((e) => {
+    if (e.projectId !== projectId) return false;
+    const ts = new Date(e.timestamp).getTime();
+    return ts >= fromMs && ts <= toMs;
+  })
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, limit);
+}
+
+/** In-memory stand-in for `GET /api/v1/usage/costs/projection` (avg daily × 30). */
+export function getMockUsageCostProjection(projectId: string): UsageCostProjection {
+  if (!projectId?.trim()) throw new Error("projectId is required");
+  const projectExists = MOCK_PROJECTS.some((p) => p.id === projectId);
+  if (!projectExists) throw new Error(`Unknown projectId: ${projectId}`);
+
+  const now = Date.now();
+  const fromMs = now - 7 * 86_400_000;
+  const windowCost = MOCK_USAGE_EVENTS.filter((e) => {
+    if (e.projectId !== projectId) return false;
+    const ts = new Date(e.timestamp).getTime();
+    return ts >= fromMs && ts <= now;
+  }).reduce((sum, e) => sum + e.costUsd, 0);
+
+  const avgDailyCostUsd = Math.round((windowCost / 7) * 1e8) / 1e8;
+  return {
+    projectId,
+    windowDays: 7,
+    avgDailyCostUsd,
+    projectedMonthlyCostUsd: Math.round(avgDailyCostUsd * 30 * 1e8) / 1e8,
   };
 }

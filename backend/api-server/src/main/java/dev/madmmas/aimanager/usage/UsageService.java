@@ -4,6 +4,7 @@ import dev.madmmas.aimanager.common.exception.BatchValidationException;
 import dev.madmmas.aimanager.common.util.Ids;
 import dev.madmmas.aimanager.project.ProjectRepository;
 import dev.madmmas.aimanager.prompt.LlmProvider;
+import dev.madmmas.aimanager.provider.CostRateRegistry;
 import dev.madmmas.aimanager.usage.dto.UsageEventCreateRequest;
 import dev.madmmas.aimanager.usage.dto.UsageEventIngestRequest;
 import dev.madmmas.aimanager.usage.dto.UsageEventIngestResponse;
@@ -22,16 +23,21 @@ public class UsageService {
 
   private final UsageEventRepository usageEventRepository;
   private final ProjectRepository projectRepository;
+  private final CostRateRegistry costRateRegistry;
 
   public UsageService(
-      UsageEventRepository usageEventRepository, ProjectRepository projectRepository) {
+      UsageEventRepository usageEventRepository,
+      ProjectRepository projectRepository,
+      CostRateRegistry costRateRegistry) {
     this.usageEventRepository = usageEventRepository;
     this.projectRepository = projectRepository;
+    this.costRateRegistry = costRateRegistry;
   }
 
   /**
    * All-or-nothing batched ingest. Validates every event first; on any failure rejects the whole
-   * batch with a 400 listing per-index errors.
+   * batch with a 400 listing per-index errors. When {@code costUsd} is omitted, cost is computed
+   * from {@link CostRateRegistry}; an explicit client value is kept as an override.
    */
   @Transactional
   public UsageEventIngestResponse ingest(UsageEventIngestRequest request) {
@@ -93,7 +99,7 @@ public class UsageService {
     int inputTokens = request.inputTokens() == null ? 0 : request.inputTokens();
     int outputTokens = request.outputTokens() == null ? 0 : request.outputTokens();
     int latencyMs = request.latencyMs() == null ? 0 : request.latencyMs();
-    BigDecimal costUsd = request.costUsd() == null ? BigDecimal.ZERO : request.costUsd();
+    String model = request.model().trim();
 
     if (inputTokens < 0) {
       throw new IllegalArgumentException("inputTokens must be >= 0");
@@ -104,8 +110,16 @@ public class UsageService {
     if (latencyMs < 0) {
       throw new IllegalArgumentException("latencyMs must be >= 0");
     }
-    if (costUsd.compareTo(BigDecimal.ZERO) < 0) {
-      throw new IllegalArgumentException("costUsd must be >= 0");
+
+    BigDecimal costUsd;
+    if (request.costUsd() == null) {
+      costUsd = costRateRegistry.computeCost(model, inputTokens, outputTokens);
+    } else {
+      costUsd = request.costUsd();
+      if (costUsd.compareTo(BigDecimal.ZERO) < 0) {
+        throw new IllegalArgumentException("costUsd must be >= 0");
+      }
+      costUsd = costUsd.setScale(CostRateRegistry.COST_SCALE, CostRateRegistry.COST_ROUNDING);
     }
 
     UsageEvent event = new UsageEvent();
@@ -120,7 +134,7 @@ public class UsageService {
     event.setPromptVersionId(blankToNull(request.promptVersionId()));
     event.setApiKeyId(blankToNull(request.apiKeyId()));
     event.setProvider(provider);
-    event.setModel(request.model().trim());
+    event.setModel(model);
     event.setInputTokens(inputTokens);
     event.setOutputTokens(outputTokens);
     event.setLatencyMs(latencyMs);

@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import dev.madmmas.aimanager.common.exception.BatchValidationException;
 import dev.madmmas.aimanager.project.ProjectRepository;
+import dev.madmmas.aimanager.provider.CostRateProperties;
+import dev.madmmas.aimanager.provider.CostRateRegistry;
 import dev.madmmas.aimanager.usage.dto.UsageEventCreateRequest;
 import dev.madmmas.aimanager.usage.dto.UsageEventIngestRequest;
 import dev.madmmas.aimanager.usage.dto.UsageEventIngestResponse;
@@ -34,7 +36,14 @@ class UsageServiceTests {
 
   @BeforeEach
   void setUp() {
-    usageService = new UsageService(usageEventRepository, projectRepository);
+    CostRateProperties properties = new CostRateProperties();
+    CostRateProperties.ModelRate sonnet = new CostRateProperties.ModelRate();
+    sonnet.setModel("claude-sonnet-4-20250514");
+    sonnet.setInputUsdPer1k(new BigDecimal("0.003"));
+    sonnet.setOutputUsdPer1k(new BigDecimal("0.015"));
+    properties.setRates(List.of(sonnet));
+    usageService =
+        new UsageService(usageEventRepository, projectRepository, new CostRateRegistry(properties));
   }
 
   @Test
@@ -149,6 +158,59 @@ class UsageServiceTests {
                                 new BigDecimal("-0.01"))))));
 
     assertThat(error.getErrors()).anyMatch(e -> e.contains("costUsd must be >= 0"));
+  }
+
+  @Test
+  void ingestComputesCostWhenCostUsdOmitted() {
+    when(projectRepository.existsById(PROJECT_ID)).thenReturn(true);
+    when(usageEventRepository.saveAll(anyList()))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+
+    UsageEventIngestResponse response =
+        usageService.ingest(
+            new UsageEventIngestRequest(
+                List.of(
+                    event(
+                        PROJECT_ID,
+                        "anthropic",
+                        "claude-sonnet-4-20250514",
+                        "success",
+                        1000,
+                        2000,
+                        90,
+                        null))));
+
+    assertThat(response.events().get(0).costUsd()).isEqualByComparingTo("0.03300000");
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<List<UsageEvent>> captor = ArgumentCaptor.forClass(List.class);
+    verify(usageEventRepository).saveAll(captor.capture());
+    assertThat(captor.getValue().get(0).getCostUsd()).isEqualByComparingTo("0.03300000");
+  }
+
+  @Test
+  void ingestKeepsExplicitCostUsdOverride() {
+    when(projectRepository.existsById(PROJECT_ID)).thenReturn(true);
+    when(usageEventRepository.saveAll(anyList()))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+
+    usageService.ingest(
+        new UsageEventIngestRequest(
+            List.of(
+                event(
+                    PROJECT_ID,
+                    "anthropic",
+                    "claude-sonnet-4-20250514",
+                    "success",
+                    1000,
+                    2000,
+                    90,
+                    new BigDecimal("9.99")))));
+
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<List<UsageEvent>> captor = ArgumentCaptor.forClass(List.class);
+    verify(usageEventRepository).saveAll(captor.capture());
+    assertThat(captor.getValue().get(0).getCostUsd()).isEqualByComparingTo("9.99000000");
   }
 
   @Test
