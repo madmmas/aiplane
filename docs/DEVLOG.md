@@ -28,6 +28,22 @@ reverse-engineer from git history.
 
 ---
 
+## 2026-07-24 — Playground via mockable Spring AI port (#52)
+
+`POST /api/v1/prompts/{id}/playground/run` loads a version (explicit `versionId` or
+active), resolves `{{variable}}` placeholders, then calls `PromptPlaygroundRunner`.
+The production `@Primary` bean (`SpringAiPromptPlaygroundRunner`) uses Spring AI
+`ChatClient` against Anthropic/OpenAI `ChatModel`s from `LlmProviderFactory`.
+
+**Optional keys:** we depend on `spring-ai-openai` / `spring-ai-anthropic` (model
+libs, not Boot starters) and build models only when `OPENAI_API_KEY` /
+`ANTHROPIC_API_KEY` are set — missing keys leave the app booting and return 503
+"provider not configured" at call time. HTTP read/connect timeout is 30s
+(`aiplane.playground.timeout`); timeouts → 504, other provider failures → 502.
+Unit tests mock the runner/factory — no live API calls in CI.
+
+---
+
 ## 2026-07-24 — Version promotion state machine + export hook stub (#51)
 
 Promotion is a strict path (`draft → testing → active → archived`) on

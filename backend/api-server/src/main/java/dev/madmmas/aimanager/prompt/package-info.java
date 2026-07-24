@@ -1,2 +1,2 @@
-/** Prompt Manager domain — CRUD and versions (Phase 1; promotion/playground later). */
+/** Prompt Manager domain — CRUD, versions, promotion, and playground. */
 package dev.madmmas.aimanager.prompt;

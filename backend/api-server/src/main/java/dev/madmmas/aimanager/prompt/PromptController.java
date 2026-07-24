@@ -1,5 +1,7 @@
 package dev.madmmas.aimanager.prompt;
 
+import dev.madmmas.aimanager.prompt.dto.PlaygroundRunRequest;
+import dev.madmmas.aimanager.prompt.dto.PlaygroundRunResponse;
 import dev.madmmas.aimanager.prompt.dto.PromptCreateRequest;
 import dev.madmmas.aimanager.prompt.dto.PromptResponse;
 import dev.madmmas.aimanager.prompt.dto.PromptUpdateRequest;
@@ -25,9 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PromptController {
 
   private final PromptService service;
+  private final PlaygroundService playgroundService;
 
-  public PromptController(PromptService service) {
+  public PromptController(PromptService service, PlaygroundService playgroundService) {
     this.service = service;
+    this.playgroundService = playgroundService;
   }
 
   @GetMapping
@@ -89,5 +93,11 @@ public class PromptController {
   PromptVersionResponse promoteVersion(
       @PathVariable("id") String id, @PathVariable("vid") String vid) {
     return service.promoteVersion(id, vid);
+  }
+
+  @PostMapping("/{id}/playground/run")
+  PlaygroundRunResponse runPlayground(
+      @PathVariable("id") String id, @Valid @RequestBody PlaygroundRunRequest request) {
+    return playgroundService.run(id, request);
   }
 }

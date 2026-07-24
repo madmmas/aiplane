@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Prompt / PromptVersion CRUD REST API via Spring Data JPA over Flyway `prompts` / `prompt_versions` (#50)
 - Prompt version promotion state machine (`draft` → `testing` → `active` → `archived`) with `PATCH .../status`, optional `POST .../promote`, single-active enforcement, and `PromptConfigExporter` hook on activation (#51)
+- Prompt playground endpoint (`POST /api/v1/prompts/{id}/playground/run`) with Spring AI ChatClient for Anthropic + OpenAI, optional API keys, 30s timeout, and a mockable `PromptPlaygroundRunner` port (#52)
 - Guardrail core evaluators: keyword blocklist, regex filter (ReDoS-bounded), and max-length, plus a Spring AI `CallAdvisor` that runs them against prompt/response text (#54)
 - Guardrail set persistence (ordered members + configurable short-circuit), CRUD REST API, and evaluate endpoint (#55)
 - Guardrail MFE rule builder + ordered set editor + test panel, with `@repo/api-client` hooks and mocks (#56)
