@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import dev.madmmas.aimanager.common.exception.ResourceNotFoundException;
@@ -19,10 +20,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,8 +35,16 @@ class PromptServiceTests {
   @Mock private PromptRepository promptRepository;
   @Mock private PromptVersionRepository versionRepository;
   @Mock private ProjectRepository projectRepository;
+  @Mock private PromptConfigExporter configExporter;
 
-  @InjectMocks private PromptService promptService;
+  private PromptService promptService;
+
+  @BeforeEach
+  void setUp() {
+    promptService =
+        new PromptService(
+            promptRepository, versionRepository, projectRepository, configExporter);
+  }
 
   @Test
   void listRequiresProjectId() {
@@ -194,6 +203,119 @@ class PromptServiceTests {
         ResourceNotFoundException.class, () -> promptService.getVersion("prm_1", "ver_1"));
   }
 
+  @Test
+  void updateVersionStatusDraftToTesting() {
+    Prompt prompt = prompt("prm_1", "p", null, new String[0]);
+    PromptVersion version = version("ver_1", "prm_1", 1, PromptVersionStatus.DRAFT);
+    when(promptRepository.findById("prm_1")).thenReturn(Optional.of(prompt));
+    when(versionRepository.findByIdAndPromptId("ver_1", "prm_1"))
+        .thenReturn(Optional.of(version));
+    when(versionRepository.save(version)).thenReturn(version);
+
+    PromptVersionResponse response =
+        promptService.updateVersionStatus("prm_1", "ver_1", "testing");
+
+    assertThat(version.getStatus()).isEqualTo(PromptVersionStatus.TESTING);
+    assertThat(response.status()).isEqualTo("testing");
+    verifyNoInteractions(configExporter);
+    verify(promptRepository, never()).save(any());
+  }
+
+  @Test
+  void updateVersionStatusRejectsDraftToActive() {
+    Prompt prompt = prompt("prm_1", "p", null, new String[0]);
+    PromptVersion version = version("ver_1", "prm_1", 1, PromptVersionStatus.DRAFT);
+    when(promptRepository.findById("prm_1")).thenReturn(Optional.of(prompt));
+    when(versionRepository.findByIdAndPromptId("ver_1", "prm_1"))
+        .thenReturn(Optional.of(version));
+
+    IllegalArgumentException error =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> promptService.updateVersionStatus("prm_1", "ver_1", "active"));
+
+    assertThat(error).hasMessageContaining("Invalid status transition");
+    verifyNoInteractions(configExporter);
+    verify(versionRepository, never()).save(any());
+  }
+
+  @Test
+  void updateVersionStatusToActiveArchivesPreviousAndInvokesExporter() {
+    Prompt prompt = prompt("prm_1", "p", null, new String[0]);
+    prompt.setActiveVersionId("ver_old");
+    PromptVersion previous = version("ver_old", "prm_1", 1, PromptVersionStatus.ACTIVE);
+    PromptVersion candidate = version("ver_new", "prm_1", 2, PromptVersionStatus.TESTING);
+
+    when(promptRepository.findById("prm_1")).thenReturn(Optional.of(prompt));
+    when(versionRepository.findByIdAndPromptId("ver_new", "prm_1"))
+        .thenReturn(Optional.of(candidate));
+    when(versionRepository.findByPromptIdAndStatus("prm_1", PromptVersionStatus.ACTIVE))
+        .thenReturn(List.of(previous));
+    when(versionRepository.save(any(PromptVersion.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+    when(promptRepository.save(prompt)).thenReturn(prompt);
+
+    PromptVersionResponse response =
+        promptService.updateVersionStatus("prm_1", "ver_new", "active");
+
+    assertThat(previous.getStatus()).isEqualTo(PromptVersionStatus.ARCHIVED);
+    assertThat(candidate.getStatus()).isEqualTo(PromptVersionStatus.ACTIVE);
+    assertThat(prompt.getActiveVersionId()).isEqualTo("ver_new");
+    assertThat(response.status()).isEqualTo("active");
+    verify(configExporter).onVersionActivated(prompt, candidate);
+  }
+
+  @Test
+  void promoteVersionAdvancesOneStep() {
+    Prompt prompt = prompt("prm_1", "p", null, new String[0]);
+    PromptVersion version = version("ver_1", "prm_1", 1, PromptVersionStatus.DRAFT);
+    when(promptRepository.findById("prm_1")).thenReturn(Optional.of(prompt));
+    when(versionRepository.findByIdAndPromptId("ver_1", "prm_1"))
+        .thenReturn(Optional.of(version));
+    when(versionRepository.save(version)).thenReturn(version);
+
+    PromptVersionResponse response = promptService.promoteVersion("prm_1", "ver_1");
+
+    assertThat(response.status()).isEqualTo("testing");
+    verifyNoInteractions(configExporter);
+  }
+
+  @Test
+  void promoteVersionRejectsFromActive() {
+    Prompt prompt = prompt("prm_1", "p", null, new String[0]);
+    PromptVersion version = version("ver_1", "prm_1", 1, PromptVersionStatus.ACTIVE);
+    when(promptRepository.findById("prm_1")).thenReturn(Optional.of(prompt));
+    when(versionRepository.findByIdAndPromptId("ver_1", "prm_1"))
+        .thenReturn(Optional.of(version));
+
+    IllegalArgumentException error =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> promptService.promoteVersion("prm_1", "ver_1"));
+
+    assertThat(error).hasMessageContaining("Cannot promote from status: active");
+    verifyNoInteractions(configExporter);
+  }
+
+  @Test
+  void updateVersionStatusActiveToArchivedClearsActiveVersionId() {
+    Prompt prompt = prompt("prm_1", "p", null, new String[0]);
+    prompt.setActiveVersionId("ver_1");
+    PromptVersion version = version("ver_1", "prm_1", 1, PromptVersionStatus.ACTIVE);
+    when(promptRepository.findById("prm_1")).thenReturn(Optional.of(prompt));
+    when(versionRepository.findByIdAndPromptId("ver_1", "prm_1"))
+        .thenReturn(Optional.of(version));
+    when(versionRepository.save(version)).thenReturn(version);
+    when(promptRepository.save(prompt)).thenReturn(prompt);
+
+    PromptVersionResponse response =
+        promptService.updateVersionStatus("prm_1", "ver_1", "archived");
+
+    assertThat(response.status()).isEqualTo("archived");
+    assertThat(prompt.getActiveVersionId()).isNull();
+    verifyNoInteractions(configExporter);
+  }
+
   private static Prompt prompt(String id, String name, String description, String[] tags) {
     Prompt prompt = new Prompt();
     prompt.setId(id);
@@ -204,5 +326,22 @@ class PromptServiceTests {
     prompt.setCreatedAt(Instant.parse("2026-07-24T10:00:00Z"));
     prompt.setUpdatedAt(Instant.parse("2026-07-24T10:00:00Z"));
     return prompt;
+  }
+
+  private static PromptVersion version(
+      String id, String promptId, int versionNumber, PromptVersionStatus status) {
+    PromptVersion version = new PromptVersion();
+    version.setId(id);
+    version.setPromptId(promptId);
+    version.setVersion(versionNumber);
+    version.setModel("claude-haiku-4-5");
+    version.setProvider(LlmProvider.ANTHROPIC);
+    version.setSystemPrompt("");
+    version.setUserPromptTemplate("");
+    version.setParameters(Map.of());
+    version.setStatus(status);
+    version.setCreatedBy("system");
+    version.setCreatedAt(Instant.parse("2026-07-24T11:00:00Z"));
+    return version;
   }
 }

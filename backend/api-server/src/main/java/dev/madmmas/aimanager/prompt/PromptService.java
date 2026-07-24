@@ -23,14 +23,17 @@ public class PromptService {
   private final PromptRepository promptRepository;
   private final PromptVersionRepository versionRepository;
   private final ProjectRepository projectRepository;
+  private final PromptConfigExporter configExporter;
 
   public PromptService(
       PromptRepository promptRepository,
       PromptVersionRepository versionRepository,
-      ProjectRepository projectRepository) {
+      ProjectRepository projectRepository,
+      PromptConfigExporter configExporter) {
     this.promptRepository = promptRepository;
     this.versionRepository = versionRepository;
     this.projectRepository = projectRepository;
+    this.configExporter = configExporter;
   }
 
   @Transactional(readOnly = true)
@@ -142,10 +145,87 @@ public class PromptService {
     return toVersionResponse(versionRepository.save(version));
   }
 
+  /**
+   * Applies a status transition for a version. Valid path: draft → testing → active → archived.
+   * Activating a version archives any other active version for the same prompt and updates {@code
+   * prompts.active_version_id}, then invokes {@link PromptConfigExporter}.
+   */
+  @Transactional
+  public PromptVersionResponse updateVersionStatus(
+      String promptId, String versionId, String statusWire) {
+    PromptVersionStatus target = PromptVersionStatus.fromWireValue(statusWire);
+    return applyStatusTransition(promptId, versionId, target);
+  }
+
+  /** Advances one step along the promotion path (draft → testing → active). */
+  @Transactional
+  public PromptVersionResponse promoteVersion(String promptId, String versionId) {
+    PromptVersion version = requireVersion(promptId, versionId);
+    PromptVersionStatus next = version.getStatus().nextPromotionStatus();
+    if (next == null) {
+      throw new IllegalArgumentException(
+          "Cannot promote from status: " + version.getStatus().wireValue());
+    }
+    return applyStatusTransition(promptId, versionId, next);
+  }
+
+  private PromptVersionResponse applyStatusTransition(
+      String promptId, String versionId, PromptVersionStatus target) {
+    Prompt prompt = requirePrompt(promptId);
+    PromptVersion version = requireVersion(promptId, versionId);
+    PromptVersionStatus current = version.getStatus();
+
+    if (!current.canTransitionTo(target)) {
+      throw new IllegalArgumentException(
+          "Invalid status transition: " + current.wireValue() + " → " + target.wireValue());
+    }
+
+    if (target == PromptVersionStatus.ACTIVE) {
+      archiveOtherActiveVersions(promptId, versionId);
+      version.setStatus(PromptVersionStatus.ACTIVE);
+      versionRepository.save(version);
+      prompt.setActiveVersionId(versionId);
+      promptRepository.save(prompt);
+      configExporter.onVersionActivated(prompt, version);
+      return toVersionResponse(version);
+    }
+
+    version.setStatus(target);
+    versionRepository.save(version);
+
+    if (target == PromptVersionStatus.ARCHIVED
+        && versionId.equals(prompt.getActiveVersionId())) {
+      prompt.setActiveVersionId(null);
+      promptRepository.save(prompt);
+    }
+
+    return toVersionResponse(version);
+  }
+
+  private void archiveOtherActiveVersions(String promptId, String keepVersionId) {
+    List<PromptVersion> active =
+        versionRepository.findByPromptIdAndStatus(promptId, PromptVersionStatus.ACTIVE);
+    for (PromptVersion other : active) {
+      if (!other.getId().equals(keepVersionId)) {
+        other.setStatus(PromptVersionStatus.ARCHIVED);
+        versionRepository.save(other);
+      }
+    }
+  }
+
   private Prompt requirePrompt(String id) {
     return promptRepository
         .findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Prompt not found: " + id));
+  }
+
+  private PromptVersion requireVersion(String promptId, String versionId) {
+    requirePrompt(promptId);
+    return versionRepository
+        .findByIdAndPromptId(versionId, promptId)
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException("Prompt version not found: " + versionId));
   }
 
   private static String[] toTagArray(List<String> tags) {

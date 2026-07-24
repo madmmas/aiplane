@@ -5,6 +5,7 @@ import dev.madmmas.aimanager.prompt.dto.PromptResponse;
 import dev.madmmas.aimanager.prompt.dto.PromptUpdateRequest;
 import dev.madmmas.aimanager.prompt.dto.PromptVersionCreateRequest;
 import dev.madmmas.aimanager.prompt.dto.PromptVersionResponse;
+import dev.madmmas.aimanager.prompt.dto.PromptVersionStatusUpdateRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -73,5 +74,20 @@ public class PromptController {
   PromptVersionResponse getVersion(
       @PathVariable("id") String id, @PathVariable("vid") String vid) {
     return service.getVersion(id, vid);
+  }
+
+  @PatchMapping("/{id}/versions/{vid}/status")
+  PromptVersionResponse updateVersionStatus(
+      @PathVariable("id") String id,
+      @PathVariable("vid") String vid,
+      @Valid @RequestBody PromptVersionStatusUpdateRequest request) {
+    return service.updateVersionStatus(id, vid, request.status());
+  }
+
+  /** Advances one step: draft → testing → active. */
+  @PostMapping("/{id}/versions/{vid}/promote")
+  PromptVersionResponse promoteVersion(
+      @PathVariable("id") String id, @PathVariable("vid") String vid) {
+    return service.promoteVersion(id, vid);
   }
 }
