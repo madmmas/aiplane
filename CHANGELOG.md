@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Guardrail set persistence (ordered members + configurable short-circuit), CRUD REST API, and evaluate endpoint (#55)
 - Guardrail MFE rule builder + ordered set editor + test panel, with `@repo/api-client` hooks and mocks (#56)
 - Prompt Manager MFE: library + create/edit, version timeline with promote, editor, and playground panel; `@repo/api-client` prompt/version/playground hooks and mocks (#53)
+- Batched usage event ingest (`POST /api/v1/usage/events`) with all-or-nothing validation over Flyway V8 `usage_events`, plus `@repo/api-client` `useIngestUsageEvents` / mock helper (#57)
 
 ### Changed
 

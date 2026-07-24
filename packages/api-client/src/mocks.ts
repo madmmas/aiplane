@@ -10,6 +10,9 @@ import type {
   Prompt,
   PromptVersion,
   PromptVersionStatus,
+  UsageEvent,
+  UsageEventCreateInput,
+  UsageEventIngestResponse,
 } from "@repo/types";
 
 /** In-memory fixtures used while the Spring API is not yet available. */
@@ -32,6 +35,7 @@ export let MOCK_PROMPTS: Prompt[] = [];
 export let MOCK_PROMPT_VERSIONS: PromptVersion[] = [];
 export let MOCK_GUARDRAILS: Guardrail[] = [];
 export let MOCK_GUARDRAIL_SETS: GuardrailSet[] = [];
+export let MOCK_USAGE_EVENTS: UsageEvent[] = [];
 
 const DEFAULT_PARAMS: ModelParameters = {
   temperature: 0.2,
@@ -569,4 +573,88 @@ export function evaluateMockGuardrailSet(
   }
 
   return { blocked, shortCircuited, results };
+}
+
+/** Reset mutable usage event fixtures (call from tests between cases). */
+export function resetUsageMocks(): void {
+  MOCK_USAGE_EVENTS = [];
+}
+
+const ALLOWED_PROVIDERS = new Set<LLMProvider>([
+  "anthropic",
+  "openai",
+  "azure-openai",
+  "bedrock",
+  "ollama",
+  "gemini",
+]);
+
+const ALLOWED_STATUSES = new Set(["success", "error", "guardrail-blocked"]);
+
+/**
+ * In-memory stand-in for `POST /api/v1/usage/events`. Mirrors server all-or-nothing
+ * validation so the usages-data MFE (#59) can develop against mocks first.
+ */
+export function ingestMockUsageEvents(events: UsageEventCreateInput[]): UsageEventIngestResponse {
+  if (!events.length) {
+    throw new Error("events must be a non-empty array");
+  }
+
+  const errors: string[] = [];
+  const prepared: UsageEvent[] = [];
+
+  for (let i = 0; i < events.length; i++) {
+    const item = events[i];
+    try {
+      prepared.push(toMockUsageEvent(item));
+    } catch (err) {
+      errors.push(`[${i}] ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  if (errors.length) {
+    throw new Error(errors.join("; "));
+  }
+
+  MOCK_USAGE_EVENTS = [...MOCK_USAGE_EVENTS, ...prepared];
+  return { accepted: prepared.length, events: prepared };
+}
+
+function toMockUsageEvent(input: UsageEventCreateInput): UsageEvent {
+  if (!input.projectId?.trim()) throw new Error("projectId is required");
+  if (!input.model?.trim()) throw new Error("model is required");
+  if (!ALLOWED_PROVIDERS.has(input.provider)) {
+    throw new Error(`Unknown LLM provider: ${input.provider}`);
+  }
+  if (!ALLOWED_STATUSES.has(input.status)) {
+    throw new Error(`Unknown usage event status: ${input.status}`);
+  }
+
+  const projectExists = MOCK_PROJECTS.some((p) => p.id === input.projectId);
+  if (!projectExists) throw new Error(`Unknown projectId: ${input.projectId}`);
+
+  const inputTokens = input.inputTokens ?? 0;
+  const outputTokens = input.outputTokens ?? 0;
+  const latencyMs = input.latencyMs ?? 0;
+  const costUsd = input.costUsd ?? 0;
+  if (inputTokens < 0) throw new Error("inputTokens must be >= 0");
+  if (outputTokens < 0) throw new Error("outputTokens must be >= 0");
+  if (latencyMs < 0) throw new Error("latencyMs must be >= 0");
+  if (costUsd < 0) throw new Error("costUsd must be >= 0");
+
+  return {
+    id: input.id?.trim() || `ue_mock_${Date.now()}_${MOCK_USAGE_EVENTS.length}`,
+    projectId: input.projectId.trim(),
+    promptId: input.promptId,
+    promptVersionId: input.promptVersionId,
+    apiKeyId: input.apiKeyId,
+    provider: input.provider,
+    model: input.model.trim(),
+    inputTokens,
+    outputTokens,
+    latencyMs,
+    costUsd,
+    status: input.status,
+    timestamp: input.timestamp ?? new Date().toISOString(),
+  };
 }

@@ -38,4 +38,11 @@ export type {
   User,
 } from "./user";
 
-export type { UsageEvent, UsageProviderBreakdown, UsageSummary } from "./usage";
+export type {
+  UsageEvent,
+  UsageEventCreateInput,
+  UsageEventIngestRequest,
+  UsageEventIngestResponse,
+  UsageProviderBreakdown,
+  UsageSummary,
+} from "./usage";

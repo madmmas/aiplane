@@ -16,6 +16,33 @@ export interface UsageEvent {
   timestamp: IsoDateTime;
 }
 
+/** Payload for `POST /api/v1/usage/events` — one row inside the batch envelope. */
+export interface UsageEventCreateInput {
+  id?: string;
+  projectId: string;
+  promptId?: string;
+  promptVersionId?: string;
+  apiKeyId?: string;
+  provider: LLMProvider;
+  model: string;
+  inputTokens?: number;
+  outputTokens?: number;
+  latencyMs?: number;
+  costUsd?: number;
+  status: UsageEventStatus;
+  timestamp?: IsoDateTime;
+}
+
+/** Forward-compatible ingest envelope: `{ "events": [ ... ] }`. */
+export interface UsageEventIngestRequest {
+  events: UsageEventCreateInput[];
+}
+
+export interface UsageEventIngestResponse {
+  accepted: number;
+  events: UsageEvent[];
+}
+
 export interface UsageProviderBreakdown {
   provider: LLMProvider;
   requests: number;

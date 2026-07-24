@@ -1011,7 +1011,7 @@ Complete via epic [#14](https://github.com/madmmas/aiplane/issues/14) (sub-issue
 - [x] Test panel UI (#56)
 
 ### Phase 3 — Usage Telemetry
-- [ ] Usage event ingest (write endpoint for client apps)
+- [x] Usage event ingest (write endpoint for client apps) (#57)
 - [ ] Overview dashboard (KPIs + Recharts)
 - [ ] Cost tracking with provider rate config
 
