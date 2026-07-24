@@ -35,7 +35,7 @@ This document describes how to implement the open-source roadmap for **AIPlane**
 | [#55](https://github.com/madmmas/aiplane/issues/55) | Guardrail sets with ordering + short-circuit | `feat/phase-2-guardrail-sets` | Phase 2 | Done ([#76](https://github.com/madmmas/aiplane/pull/76)) |
 | [#56](https://github.com/madmmas/aiplane/issues/56) | Rule builder + test panel UI | `feat/phase-2-guardrail-ui` | Phase 2 | Done ([#77](https://github.com/madmmas/aiplane/pull/77)) |
 | [#15](https://github.com/madmmas/aiplane/issues/15) | Phase 3 — Usage Telemetry | `feat/phase-3-usages-data` | Phase 3 | Open |
-| [#57](https://github.com/madmmas/aiplane/issues/57) | Usage event ingest endpoint | `feat/phase-3-usage-ingest` | Phase 3 | Done (this PR) |
+| [#57](https://github.com/madmmas/aiplane/issues/57) | Usage event ingest endpoint | `feat/phase-3-usage-ingest` | Phase 3 | Done ([#84](https://github.com/madmmas/aiplane/pull/84)) |
 | [#58](https://github.com/madmmas/aiplane/issues/58) | Cost tracking with provider rate config | `feat/phase-3-usage-costs` | Phase 3 | Open |
 | [#59](https://github.com/madmmas/aiplane/issues/59) | Usage overview dashboard UI | `feat/phase-3-usage-dashboard` | Phase 3 | Open |
 | [#16](https://github.com/madmmas/aiplane/issues/16) | Phase 4 — User Management + API Keys | `feat/phase-4-user-manager` | Phase 4 | Open |
