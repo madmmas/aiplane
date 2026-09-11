@@ -34,7 +34,7 @@
     "msw": "^2.15.0",
     "turbo": "^2.10.7",
     "vite": "^6.4.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json}": "biome check --write --no-errors-on-unmatched"
